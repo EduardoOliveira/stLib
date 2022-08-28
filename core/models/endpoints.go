@@ -3,7 +3,6 @@ package models
 import (
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/eduardooliveira/stLib/core/state"
 	"github.com/labstack/echo/v4"
@@ -37,9 +36,5 @@ func get(c echo.Context) error {
 		return c.String(http.StatusNotFound, "Model not found")
 	}
 
-	b, err := os.ReadFile(model.Path)
-	if err != nil {
-		log.Println(err)
-	}
-	return c.Blob(http.StatusOK, "model/stl", b)
+	return c.Attachment(model.Path, model.FileName)
 }
