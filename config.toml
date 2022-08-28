@@ -1,2 +1,2 @@
-port=8000
-library_path=./testdata
+port = 8000
+library_path = "./testdata"
