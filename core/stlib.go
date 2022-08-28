@@ -41,11 +41,12 @@ func Run() {
 		templates: template.Must(template.ParseGlob("tpl/*.html")),
 	}
 	e.Renderer = renderer
+	api := e.Group("/api")
 
-	models.Register(e.Group("/models"))
-	projects.Register(e.Group("/projects"))
-	discovery.Register(e.Group("/discovery"))
-	//e.Static("/", "static")
-	//e.File("/", "static/index.html")
+	models.Register(api.Group("/models"))
+	projects.Register(api.Group("/projects"))
+	discovery.Register(api.Group("/discovery"))
+	e.File("", "frontend/dist/index.html")
+	e.Static("", "frontend/dist")
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", runtime.Cfg.Port)))
 }
