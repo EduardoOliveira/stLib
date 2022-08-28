@@ -3,11 +3,14 @@ package stlib
 import (
 	"fmt"
 	"io"
+	"log"
 	"text/template"
 
+	"github.com/BurntSushi/toml"
 	"github.com/eduardooliveira/stLib/core/discovery"
 	"github.com/eduardooliveira/stLib/core/models"
 	"github.com/eduardooliveira/stLib/core/projects"
+	"github.com/eduardooliveira/stLib/core/runtime"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -22,7 +25,13 @@ func (t *TemplateRenderer) Render(w io.Writer, name string, data interface{}, c 
 }
 
 func Run() {
-	discovery.Run("testdata")
+
+	_, err := toml.DecodeFile("config.toml", &runtime.Cfg)
+	if err != nil {
+		log.Fatal("Unable to read config file: ", err)
+	}
+
+	discovery.Run(runtime.Cfg.LibraryPath)
 	fmt.Println("starting server...")
 	e := echo.New()
 	e.Use(middleware.CORS())
@@ -38,5 +47,5 @@ func Run() {
 	discovery.Register(e.Group("/discovery"))
 	//e.Static("/", "static")
 	//e.File("/", "static/index.html")
-	e.Logger.Fatal(e.Start(":8000"))
+	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", runtime.Cfg.Port)))
 }

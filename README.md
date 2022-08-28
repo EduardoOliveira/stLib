@@ -30,7 +30,7 @@ Join discord if you have any support https://discord.gg/SqxKE3Ve4Z
 - [ ] Cleanup static files
 - [ ] Host the Vue compiled files from the Echo Server
 - [ ] Add frontend configuration
-- [ ] Add backend configuration
 - [ ] Add a build & release system
 - [ ] Launch a demo instance
+- [x] Add backend configuration
  
