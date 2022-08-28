@@ -2,3 +2,4 @@
 static/node_modules
 main
 main.exe
+release-*
