@@ -58,6 +58,7 @@ Join discord if you have any support https://discord.gg/SqxKE3Ve4Z
 - [ ] Launch a demo instance
 - [ ] Build a docker image
 - [ ] Add a bounding box to the 3d objets to center the camera
+- [ ] Allow models to be set as image
 - [x] Remove backend template rendering
 - [x] Refactor endpoint files to match API
 - [x] Cleanup static files
