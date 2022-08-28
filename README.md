@@ -5,7 +5,7 @@ A platform that allows the viewing and managment of 3d printing related projects
 ## Problem
 Many of us hoard a tone of STL's from public sites, pathreons and so forth. Keeping a tidy library easy to access and search proved dificult (at least for me).
 
-## Approche
+## Approch
 The main goal is to achive a self-hostable platform that work on top of the organization you already have, allowing you to have a nice overview of what you have collected so far.
 
 ## Discussion
