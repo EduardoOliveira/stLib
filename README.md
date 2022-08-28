@@ -21,7 +21,7 @@ Join discord if you have any support https://discord.gg/SqxKE3Ve4Z
 - [ ] Discover images in the library
 - [ ] Allow default project image definition
 - [ ] Discover slice files in the filesystem
-- [ ] 
+- [ ] Show slice settings (print time, speed, material)
 
 ## TODO Techical
 
@@ -29,5 +29,8 @@ Join discord if you have any support https://discord.gg/SqxKE3Ve4Z
 - [ ] Refactor endpoint files to match API
 - [ ] Cleanup static files
 - [ ] Host the Vue compiled files from the Echo Server
-- [] Add configuration
-
+- [ ] Add frontend configuration
+- [ ] Add backend configuration
+- [ ] Add a build & release system
+- [ ] Launch a demo instance
+ 
