@@ -25,12 +25,12 @@ Join discord if you have any support https://discord.gg/SqxKE3Ve4Z
 
 ## TODO Techical
 
-- [ ] Remove backend template rendering
-- [ ] Refactor endpoint files to match API
+- [x] Remove backend template rendering
+- [x] Refactor endpoint files to match API
 - [ ] Cleanup static files
 - [x] Host the Vue compiled files from the Echo Server
 - [x] Add frontend configuration
-- [ ] Add a build & release system
+- [x] Add a build & release system
 - [ ] Launch a demo instance
 - [x] Add backend configuration
  

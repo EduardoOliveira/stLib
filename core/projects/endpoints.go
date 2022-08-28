@@ -11,9 +11,6 @@ import (
 
 func index(c echo.Context) error {
 	return c.JSON(http.StatusOK, maps.Values(state.Projects))
-	/*return c.Render(http.StatusOK, "projects_index.html", map[string]interface{}{
-		"projects": state.Projects,
-	})*/
 }
 
 func show(c echo.Context) error {

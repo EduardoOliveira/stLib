@@ -19,13 +19,9 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-var group *echo.Group
-
 func Register(e *echo.Group) {
 
-	group = e
-	group.GET("", index)
-	group.GET("/:uuid", show)
+	_ = e
 }
 
 func Run(path string) {

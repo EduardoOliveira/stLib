@@ -2,9 +2,7 @@ package stlib
 
 import (
 	"fmt"
-	"io"
 	"log"
-	"text/template"
 
 	"github.com/BurntSushi/toml"
 	"github.com/eduardooliveira/stLib/core/discovery"
@@ -14,15 +12,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
-
-type TemplateRenderer struct {
-	templates *template.Template
-}
-
-func (t *TemplateRenderer) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
-	//TODO: https://golangexample.com/go-package-for-easily-rendering-json-xml-binary-data-and-html-templates-responses/
-	return t.templates.ExecuteTemplate(w, name, data)
-}
 
 func Run() {
 
@@ -36,11 +25,8 @@ func Run() {
 	e := echo.New()
 	e.Use(middleware.CORS())
 	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
 
-	renderer := &TemplateRenderer{
-		templates: template.Must(template.ParseGlob("tpl/*.html")),
-	}
-	e.Renderer = renderer
 	api := e.Group("/api")
 
 	models.Register(api.Group("/models"))

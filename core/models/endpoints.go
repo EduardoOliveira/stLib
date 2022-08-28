@@ -9,13 +9,6 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func index(c echo.Context) error {
-	log.Println("index")
-	return c.Render(http.StatusOK, "stls_index.html", map[string]interface{}{
-		"name": "Dolly!",
-	})
-}
-
 func show(c echo.Context) error {
 	log.Println("show")
 
