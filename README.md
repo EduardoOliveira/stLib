@@ -27,7 +27,7 @@ Join discord if you have any support https://discord.gg/SqxKE3Ve4Z
 
 - [x] Remove backend template rendering
 - [x] Refactor endpoint files to match API
-- [ ] Cleanup static files
+- [x] Cleanup static files
 - [x] Host the Vue compiled files from the Echo Server
 - [x] Add frontend configuration
 - [x] Add a build & release system
