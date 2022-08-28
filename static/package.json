@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "aurelia": "^2.0.0-alpha.38",
+    "three": "^0.143.0",
+    "three-stl-loader": "^1.0.6"
+  }
+}

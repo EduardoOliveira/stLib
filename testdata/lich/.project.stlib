@@ -1,0 +1,21 @@
+uuid = "39586d8b-006d-4edc-936d-07c50b7ac53f"
+name = "Lich"
+path = "testdata/lich"
+external_link = ""
+tags = ["mini", "lich"]
+default_image_path = "/models/render/add4d5501bd84372397b5ce1f9e6bedf5964e787"
+initialized = true
+
+[models]
+  [models.add4d5501bd84372397b5ce1f9e6bedf5964e787]
+    sha1 = "add4d5501bd84372397b5ce1f9e6bedf5964e787"
+    name = "lich-01-54mm.stl"
+    path = "testdata/lich/lich-01-54mm.stl"
+    file_name = "lich-01-54mm.stl"
+
+[default_model]
+  sha1 = "add4d5501bd84372397b5ce1f9e6bedf5964e787"
+  name = "lich-01-54mm.stl"
+  path = "testdata/lich/lich-01-54mm.stl"
+  file_name = "lich-01-54mm.stl"
+

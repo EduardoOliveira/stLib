@@ -1,0 +1,130 @@
+{{define "project_form"}}
+
+<form action="/projects" method="post" class="card" id="project">
+    <div class="card-content">
+        <input type="hidden" name="uuid" value="{{.project.UUID}}">
+        <input type="hidden" name="initialized" value="{{.project.Initialized}}">
+        <div class="field is-horizontal">
+            <div class="field-label is-normal">
+                <label class="label">Name</label>
+            </div>
+            <div class="field-body">
+                <div class="field">
+                    <div class="control">
+                        <input class="input" type="text" name="name" v-model="project.name" placeholder="Benchie" >
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="field is-horizontal">
+            <div class="field-label is-normal">
+                <label class="label">Path</label>
+            </div>
+            <div class="field-body">
+                <div class="field">
+                    <div class="control">
+                        <input class="input" type="text" name="path" disabled v-model="project.path">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="field is-horizontal">
+            <div class="field-label is-normal">
+                <label class="label">External Link</label>
+            </div>
+            <div class="field-body">
+                <div class="field">
+                    <div class="control">
+                        <input class="input" type="text" name="external_link" v-model="project.external_link"  placeholder="Thigiverse or whatever" >
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="field is-horizontal" v-for="(tag, i)  in project.tags" :key="tag">
+            <div class="field-label is-normal">
+                <label class="label">Tag</label>
+            </div>
+            
+            <div class="field-body" >
+                <div class="field">
+                    <div class="control">
+                        <input class="input" type="text" name="tagw" placeholder="Tag" v-model.trim="project.tags[i].name" :key="i">
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="control">
+                        <input class="input" type="text" name="value" placeholder="Value" v-model.trim="project.tags[i].value" :key="i">
+                    </div>
+                </div>
+                <div class="field">
+                    <p class="control" v-if="tag.new">
+                        <button class="button is-primary" @click.prevent="addTag(tag)">
+                          Add
+                        </button>
+                    </p>
+                    <p class="control" v-if="!tag.new">
+                        <button class="button is-primary" @click.prevent="removeTag(tag)">
+                          Remove
+                        </button>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <footer class="card-footer">
+        <a href="#" class="card-footer-item" @click.prevent="save()">Save</a>
+        <a href="/discovery" class="card-footer-item">Cancel</a>
+    </footer>
+</form>
+<script>
+    window.project={{.projectJson}};
+</script>
+<script >
+    const { createApp } = Vue
+
+    let app=createApp({
+      data() {
+        return {
+            project: window.project,
+        }
+      },
+      methods: {
+        addTag(tag) {
+            if(tag.name!=""&&tag.value!=""){
+                tag.new=false;
+                this.project.tags.push({name:"",value:"",new:true});
+            }
+        },
+        removeTag(tag) {
+            const index = this.project.tags.indexOf(tag);
+            if (index > -1) {
+                this.project.tags.splice(index, 1);
+            }
+        },
+        save(){
+            for (let tag of this.project.tags) {
+                if(tag.new){
+                    this.removeTag(tag);
+                }
+            }
+            axios.post('/projects', this.project)
+                .then(function(response){
+                    console.log(response);
+                    window.location.href="/discovery";
+                }).catch(function(error){
+                    console.log(error);
+                });
+        }
+      },
+      mounted() {
+            this.project.tags.push({name: "", value: "",new:true});
+      },
+    })
+
+    app.config.compilerOptions.delimiters = ['${', '}']
+    app.mount('#project')
+</script>
+{{end}}

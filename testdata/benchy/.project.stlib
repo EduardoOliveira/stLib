@@ -1,0 +1,20 @@
+uuid = "b383d633-4f4c-48ed-947f-1fd981bb0b4a"
+name = "benchy"
+path = "testdata/benchy"
+external_link = "https://www.thingiverse.com/thing:763622"
+tags = ["test", "benchy", "boat"]
+default_image_path = "/models/render/c240f46ca3f38c6c8d61b6f4247898577231af18"
+initialized = true
+
+[models]
+  [models.c240f46ca3f38c6c8d61b6f4247898577231af18]
+    sha1 = "c240f46ca3f38c6c8d61b6f4247898577231af18"
+    name = "3DBenchy.stl"
+    path = "testdata/benchy/3DBenchy.stl"
+    file_name = "3DBenchy.stl"
+
+[default_model]
+  sha1 = "c240f46ca3f38c6c8d61b6f4247898577231af18"
+  name = "3DBenchy.stl"
+  path = "testdata/benchy/3DBenchy.stl"
+  file_name = "3DBenchy.stl"
