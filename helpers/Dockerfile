@@ -4,7 +4,8 @@ RUN mkdir app
 WORKDIR /app
 COPY . .
 WORKDIR /app/frontend
-
+RUN pwd
+RUN ls -la
 RUN npm install
 RUN npm run build
 
