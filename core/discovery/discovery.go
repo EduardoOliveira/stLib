@@ -17,7 +17,6 @@ import (
 	"github.com/eduardooliveira/stLib/core/state"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
-	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
 )
 
@@ -86,6 +85,10 @@ func walker(path string, d fs.DirEntry, err error) error {
 			}
 			state.Models[model.SHA1] = model
 			project.Models[model.SHA1] = model
+
+			if project.DefaultImagePath == "" {
+				project.DefaultImagePath = fmt.Sprintf("/models/render/%s", model.SHA1)
+			}
 			project.DefaultModel = model //TODO: make this configurable
 		} else if strings.HasSuffix(file.Name(), ".png") || strings.HasSuffix(file.Name(), ".jpg") {
 			img, err := initImage(path, file)
@@ -100,10 +103,6 @@ func walker(path string, d fs.DirEntry, err error) error {
 	}
 
 	if len(project.Models) > 0 {
-		if project.DefaultImagePath == "" {
-			m := maps.Keys(project.Models)
-			project.DefaultImagePath = fmt.Sprintf("/models/render/%s", m[:len(m)-1])
-		}
 		state.Projects[project.UUID] = project
 	}
 
