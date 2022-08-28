@@ -38,13 +38,13 @@ Join discord if you have any support https://discord.gg/SqxKE3Ve4Z
 ## TODO Features
 
 - [ ] Facelift
-- [ ] Discover images in the library
-- [ ] Allow default project image definition
 - [ ] Discover slice files in the filesystem
 - [ ] Show slice settings (print time, speed, material)
 - [ ] Allow project creation and file upload
 - [ ] Allow slice upload directly from the slicer
 - [ ] Improve the 3DView
+- [x] Allow default project image definition
+- [x] Discover images in the library
 - [x] Find projects in the filesystem
 - [x] Render a static image of the models
 - [x] Allow edition of the projects
