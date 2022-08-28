@@ -12,10 +12,17 @@ initialized = true
     name = "lich-01-54mm.stl"
     path = "testdata/lich/lich-01-54mm.stl"
     file_name = "lich-01-54mm.stl"
+    extension = ""
+    mime_type = ""
+
+[images]
+
+[slices]
 
 [default_model]
   sha1 = "add4d5501bd84372397b5ce1f9e6bedf5964e787"
   name = "lich-01-54mm.stl"
   path = "testdata/lich/lich-01-54mm.stl"
   file_name = "lich-01-54mm.stl"
-
+  extension = ""
+  mime_type = ""

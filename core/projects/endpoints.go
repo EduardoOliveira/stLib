@@ -33,6 +33,16 @@ func showModels(c echo.Context) error {
 	return c.JSON(http.StatusOK, maps.Values(project.Models))
 }
 
+func showImages(c echo.Context) error {
+	uuid := c.Param("uuid")
+	project, ok := state.Projects[uuid]
+
+	if !ok {
+		return c.NoContent(http.StatusNotFound)
+	}
+	return c.JSON(http.StatusOK, maps.Values(project.Images))
+}
+
 func update(c echo.Context) error {
 	pproject := &state.Project{}
 
@@ -48,9 +58,10 @@ func update(c echo.Context) error {
 
 	pproject.Path = project.Path
 	pproject.Models = project.Models
+	pproject.Images = project.Images
+	pproject.Slices = project.Slices
 	pproject.Initialized = true
 	state.Projects[pproject.UUID] = pproject
-	delete(state.UnInitializedProjects, project.UUID)
 
 	err := state.PersistProject(pproject)
 

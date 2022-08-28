@@ -8,6 +8,7 @@ import (
 	"io/fs"
 	"io/ioutil"
 	"log"
+	"mime"
 	"os"
 	"path/filepath"
 	"strings"
@@ -16,6 +17,7 @@ import (
 	"github.com/eduardooliveira/stLib/core/state"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slices"
 )
 
@@ -32,8 +34,6 @@ func Run(path string) {
 	}
 	j, _ := json.Marshal(state.Projects)
 	log.Println(string(j))
-	js, _ := json.Marshal(state.UnInitializedProjects)
-	log.Println(string(js))
 }
 
 func walker(path string, d fs.DirEntry, err error) error {
@@ -63,6 +63,8 @@ func walker(path string, d fs.DirEntry, err error) error {
 		Initialized: false,
 		Tags:        make([]string, 0),
 		Models:      make(map[string]*state.Model),
+		Images:      make(map[string]*state.ProjectImage),
+		Slices:      make(map[string]*state.Slice),
 	}
 
 	if slices.Contains(fNames, ".project.stlib") {
@@ -84,15 +86,24 @@ func walker(path string, d fs.DirEntry, err error) error {
 			}
 			state.Models[model.SHA1] = model
 			project.Models[model.SHA1] = model
-			project.DefaultImagePath = fmt.Sprintf("/models/render/%s", model.SHA1)
 			project.DefaultModel = model //TODO: make this configurable
-		} else if strings.HasSuffix(file.Name(), ".png") {
-
+		} else if strings.HasSuffix(file.Name(), ".png") || strings.HasSuffix(file.Name(), ".jpg") {
+			img, err := initImage(path, file)
+			if err != nil {
+				log.Printf("error loading the image %q: %v\n", file.Name(), err)
+				continue
+			}
+			state.Images[img.SHA1] = img
+			project.Images[img.SHA1] = img
 		}
 
 	}
 
 	if len(project.Models) > 0 {
+		if project.DefaultImagePath == "" {
+			m := maps.Keys(project.Models)
+			project.DefaultImagePath = fmt.Sprintf("/models/render/%s", m[:len(m)-1])
+		}
 		state.Projects[project.UUID] = project
 	}
 
@@ -117,19 +128,34 @@ func initModel(path string, file fs.FileInfo) (*state.Model, error) {
 		Path:     fmt.Sprintf("%s/%s", path, file.Name()),
 		FileName: file.Name(),
 	}
-	f, err := os.Open(model.Path)
+	model.Extension = filepath.Ext(model.FileName)
+	model.MimeType = mime.TypeByExtension(model.Extension)
+
+	var err error
+	model.SHA1, err = getFileSha1(model.Path)
 	if err != nil {
 		return nil, err
 	}
-	defer f.Close()
 
-	h := sha1.New()
-	if _, err := io.Copy(h, f); err != nil {
+	return model, nil
+}
+
+func initImage(path string, file fs.FileInfo) (*state.ProjectImage, error) {
+	log.Println("found image", file.Name())
+	img := &state.ProjectImage{
+		Name:      file.Name(),
+		Path:      fmt.Sprintf("%s/%s", path, file.Name()),
+		Extension: filepath.Ext(file.Name()),
+	}
+	img.MimeType = mime.TypeByExtension(img.Extension)
+
+	var err error
+	img.SHA1, err = getFileSha1(img.Path)
+	if err != nil {
 		return nil, err
 	}
 
-	model.SHA1 = fmt.Sprintf("%x", h.Sum(nil))
-	return model, nil
+	return img, nil
 }
 
 func getDirFileSlice(files []fs.FileInfo) ([]string, error) {
@@ -140,4 +166,18 @@ func getDirFileSlice(files []fs.FileInfo) ([]string, error) {
 	}
 
 	return fNames, nil
+}
+
+func getFileSha1(path string) (string, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+
+	h := sha1.New()
+	if _, err := io.Copy(h, f); err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%x", h.Sum(nil)), nil
 }

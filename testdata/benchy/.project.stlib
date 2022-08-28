@@ -3,7 +3,7 @@ name = "benchy"
 path = "testdata/benchy"
 external_link = "https://www.thingiverse.com/thing:763622"
 tags = ["test", "benchy", "boat"]
-default_image_path = "/models/render/c240f46ca3f38c6c8d61b6f4247898577231af18"
+default_image_path = "/images/0a4df6475332cef3f17d8fbeef686ae8d3c54fe6"
 initialized = true
 
 [models]
@@ -12,9 +12,31 @@ initialized = true
     name = "3DBenchy.stl"
     path = "testdata/benchy/3DBenchy.stl"
     file_name = "3DBenchy.stl"
+    extension = ".stl"
+    mime_type = "model/stl"
+
+[images]
+  [images.0a4df6475332cef3f17d8fbeef686ae8d3c54fe6]
+    sha1 = "0a4df6475332cef3f17d8fbeef686ae8d3c54fe6"
+    name = "IMG_20220619_091631.jpg"
+    path = "testdata/benchy/IMG_20220619_091631.jpg"
+    extension = ".jpg"
+    model_sha1 = ""
+    mime_type = "image/jpeg"
+  [images.fe36d9088ec8b7afe7c57c6511bcb414ee9b434c]
+    sha1 = "fe36d9088ec8b7afe7c57c6511bcb414ee9b434c"
+    name = "IMG_20200731_210313.jpg"
+    path = "testdata/benchy/IMG_20200731_210313.jpg"
+    extension = ".jpg"
+    model_sha1 = ""
+    mime_type = "image/jpeg"
+
+[slices]
 
 [default_model]
   sha1 = "c240f46ca3f38c6c8d61b6f4247898577231af18"
   name = "3DBenchy.stl"
   path = "testdata/benchy/3DBenchy.stl"
   file_name = "3DBenchy.stl"
+  extension = ".stl"
+  mime_type = "model/stl"

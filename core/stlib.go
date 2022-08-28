@@ -6,6 +6,7 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/eduardooliveira/stLib/core/discovery"
+	"github.com/eduardooliveira/stLib/core/images"
 	"github.com/eduardooliveira/stLib/core/models"
 	"github.com/eduardooliveira/stLib/core/projects"
 	"github.com/eduardooliveira/stLib/core/runtime"
@@ -36,6 +37,7 @@ func Run() {
 
 	api := e.Group("/api")
 
+	images.Register(api.Group("/images"))
 	models.Register(api.Group("/models"))
 	projects.Register(api.Group("/projects"))
 	discovery.Register(api.Group("/discovery"))
