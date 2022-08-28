@@ -27,12 +27,17 @@ func Run() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
+	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
+		Root:   "frontend/dist",
+		Index:  "index.html",
+		Browse: false,
+		HTML5:  true,
+	}))
+
 	api := e.Group("/api")
 
 	models.Register(api.Group("/models"))
 	projects.Register(api.Group("/projects"))
 	discovery.Register(api.Group("/discovery"))
-	e.File("", "frontend/dist/index.html")
-	e.Static("", "frontend/dist")
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", runtime.Cfg.Port)))
 }

@@ -18,6 +18,7 @@ Join discord if you have any support https://discord.gg/SqxKE3Ve4Z
 
 ## TODO Features
 
+- [ ] Facelift
 - [ ] Discover images in the library
 - [ ] Allow default project image definition
 - [ ] Discover slice files in the filesystem
@@ -25,12 +26,13 @@ Join discord if you have any support https://discord.gg/SqxKE3Ve4Z
 
 ## TODO Techical
 
+- [ ] Launch a demo instance
+- [ ] Build a docker image
 - [x] Remove backend template rendering
 - [x] Refactor endpoint files to match API
 - [x] Cleanup static files
 - [x] Host the Vue compiled files from the Echo Server
 - [x] Add frontend configuration
 - [x] Add a build & release system
-- [ ] Launch a demo instance
 - [x] Add backend configuration
  
