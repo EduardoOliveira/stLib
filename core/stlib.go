@@ -10,6 +10,7 @@ import (
 	"github.com/eduardooliveira/stLib/core/models"
 	"github.com/eduardooliveira/stLib/core/projects"
 	"github.com/eduardooliveira/stLib/core/runtime"
+	"github.com/eduardooliveira/stLib/core/slices"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -37,9 +38,10 @@ func Run() {
 
 	api := e.Group("/api")
 
+	slices.Register(api.Group("/slices"))
 	images.Register(api.Group("/images"))
 	models.Register(api.Group("/models"))
 	projects.Register(api.Group("/projects"))
-	discovery.Register(api.Group("/discovery"))
+
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", runtime.Cfg.Port)))
 }

@@ -14,16 +14,11 @@ import (
 	"strings"
 
 	"github.com/BurntSushi/toml"
+	sl "github.com/eduardooliveira/stLib/core/slices"
 	"github.com/eduardooliveira/stLib/core/state"
 	"github.com/google/uuid"
-	"github.com/labstack/echo/v4"
 	"golang.org/x/exp/slices"
 )
-
-func Register(e *echo.Group) {
-
-	_ = e
-}
 
 func Run(path string) {
 	err := filepath.WalkDir(path, walker)
@@ -89,8 +84,10 @@ func walker(path string, d fs.DirEntry, err error) error {
 			if project.DefaultImagePath == "" {
 				project.DefaultImagePath = fmt.Sprintf("/models/render/%s", model.SHA1)
 			}
-			project.DefaultModel = model //TODO: make this configurable
-		} else if strings.HasSuffix(file.Name(), ".png") || strings.HasSuffix(file.Name(), ".jpg") {
+
+		} else if (strings.HasSuffix(file.Name(), ".png") || strings.HasSuffix(file.Name(), ".jpg")) &&
+			!strings.HasSuffix(file.Name(), ".thumb.png") {
+
 			img, err := initImage(path, file)
 			if err != nil {
 				log.Printf("error loading the image %q: %v\n", file.Name(), err)
@@ -98,14 +95,30 @@ func walker(path string, d fs.DirEntry, err error) error {
 			}
 			state.Images[img.SHA1] = img
 			project.Images[img.SHA1] = img
+		} else if strings.HasSuffix(file.Name(), ".gcode") {
+			slice, err := initSliceGcode(path, file)
+			if err != nil {
+				log.Printf("error loading the gcode %q: %v\n", file.Name(), err)
+				continue
+			}
+			state.Slices[slice.SHA1] = slice
+			project.Slices[slice.SHA1] = slice
+			if slice.Image != nil {
+				project.Images[slice.Image.SHA1] = slice.Image
+				state.Images[slice.Image.SHA1] = slice.Image
+			}
 		}
 
 	}
 
 	if len(project.Models) > 0 {
+		err = state.PersistProject(project)
+		if err != nil {
+			log.Printf("error persisting the project %q: %v\n", path, err)
+			return err
+		}
 		state.Projects[project.UUID] = project
 	}
-
 	return nil
 }
 
@@ -117,7 +130,7 @@ func initProject(project *state.Project) error {
 		return err
 	}
 
-	return state.PersistProject(project)
+	return nil
 }
 
 func initModel(path string, file fs.FileInfo) (*state.Model, error) {
@@ -155,6 +168,31 @@ func initImage(path string, file fs.FileInfo) (*state.ProjectImage, error) {
 	}
 
 	return img, nil
+}
+
+func initSliceGcode(path string, file fs.FileInfo) (*state.Slice, error) {
+	log.Println("found gcode", file.Name())
+	s := &state.Slice{
+		Name:      file.Name(),
+		Path:      fmt.Sprintf("%s/%s", path, file.Name()),
+		Extension: ".gcode",
+		MimeType:  mime.TypeByExtension(".gcode"),
+		Filament:  &state.Filament{},
+	}
+	s.MimeType = mime.TypeByExtension(s.Extension)
+
+	var err error
+	s.SHA1, err = getFileSha1(s.Path)
+	if err != nil {
+		return nil, err
+	}
+
+	err = sl.GcodeToSlice(s, path)
+	if err != nil {
+		return nil, err
+	}
+
+	return s, nil
 }
 
 func getDirFileSlice(files []fs.FileInfo) ([]string, error) {

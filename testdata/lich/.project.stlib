@@ -7,22 +7,29 @@ default_image_path = "/models/render/add4d5501bd84372397b5ce1f9e6bedf5964e787"
 initialized = true
 
 [models]
+  [models.794ccd106d80de8959d11b9c51a579eb5f8326b9]
+    sha1 = "794ccd106d80de8959d11b9c51a579eb5f8326b9"
+    name = "lich-base-54mm.stl"
+    path = "testdata/lich/lich-base-54mm.stl"
+    file_name = "lich-base-54mm.stl"
+    extension = ".stl"
+    mime_type = "model/stl"
   [models.add4d5501bd84372397b5ce1f9e6bedf5964e787]
     sha1 = "add4d5501bd84372397b5ce1f9e6bedf5964e787"
     name = "lich-01-54mm.stl"
     path = "testdata/lich/lich-01-54mm.stl"
     file_name = "lich-01-54mm.stl"
-    extension = ""
-    mime_type = ""
+    extension = ".stl"
+    mime_type = "model/stl"
 
 [images]
 
 [slices]
 
 [default_model]
-  sha1 = "add4d5501bd84372397b5ce1f9e6bedf5964e787"
-  name = "lich-01-54mm.stl"
-  path = "testdata/lich/lich-01-54mm.stl"
-  file_name = "lich-01-54mm.stl"
-  extension = ""
-  mime_type = ""
+  sha1 = "794ccd106d80de8959d11b9c51a579eb5f8326b9"
+  name = "lich-base-54mm.stl"
+  path = "testdata/lich/lich-base-54mm.stl"
+  file_name = "lich-base-54mm.stl"
+  extension = ".stl"
+  mime_type = "model/stl"

@@ -11,6 +11,7 @@ import (
 var Projects = make(map[string]*Project)
 var Models = make(map[string]*Model)
 var Images = make(map[string]*ProjectImage)
+var Slices = make(map[string]*Slice)
 
 func PersistProject(project *Project) error {
 	f, err := os.OpenFile(fmt.Sprintf("%s/.project.stlib", project.Path), os.O_RDWR|os.O_CREATE, 0666)

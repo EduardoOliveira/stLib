@@ -12,8 +12,12 @@ The main goal is to achive a self-hostable platform that work on top of the orga
 
 ### Home page with filter by project name and tags
 ![Home](/docs/Home.png)
+### Project Image galery
+![Images](/docs/Images.jpg)
 ### 3DView allows you to view multiple models of the project at once with zoom and pan controls
 ![3DView](/docs/3DView.png)
+### Slice files with print details
+![SliceDetails](/docs/SliceDetails.jpg)
 ### Edit page
 ![Edit](/docs/Edit.png)
 
@@ -38,11 +42,16 @@ Join discord if you have any support https://discord.gg/SqxKE3Ve4Z
 ## TODO Features
 
 - [ ] Facelift
-- [ ] Discover slice files in the filesystem
-- [ ] Show slice settings (print time, speed, material)
+- [ ] Add klipper integration to send jobs to the printer
+- [ ] Add support for other slice formats
+- [ ] Add support for other slicers
+- [ ] Add detail to the slice view
+- [ ] Discover other files in the filesystem
 - [ ] Allow project creation and file upload
 - [ ] Allow slice upload directly from the slicer
 - [ ] Improve the 3DView
+- [x] Show slice settings (print time, speed, material)
+- [x] Discover slice files in the filesystem
 - [x] Allow default project image definition
 - [x] Discover images in the library
 - [x] Find projects in the filesystem
@@ -58,7 +67,7 @@ Join discord if you have any support https://discord.gg/SqxKE3Ve4Z
 - [ ] Launch a demo instance
 - [ ] Build a docker image
 - [ ] Add a bounding box to the 3d objets to center the camera
-- [ ] Allow models to be set as image
+- [x] Allow models to be set as image
 - [x] Remove backend template rendering
 - [x] Refactor endpoint files to match API
 - [x] Cleanup static files
