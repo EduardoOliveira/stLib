@@ -23,8 +23,8 @@ FROM debian:latest
 RUN mkdir -p app/frontend/dist
 WORKDIR /app
 
-COPY --from=go /go/app/main ./
-COPY --from=go /go/app/helpers/config.toml ./
+COPY --from=go /app/main ./
+COPY --from=go /app/helpers/config.toml ./
 COPY --from=n /app/frontend/dist ./frontend/
 RUN mkdir /library
 RUN mkdir /app/cache
