@@ -33,6 +33,23 @@ The main goal is to achive a self-hostable platform that work on top of the orga
 - Have fun.
 - When something blows up please contact me on discod :)
 
+## docker-compose
+
+```yaml
+---
+version: "3.6"
+services:
+  stlib:
+    image: ghcr.io/eduardooliveira/stlib:main
+    container_name: stlib
+    volumes:
+      - ./library:/library
+    ports:
+      - 8000:8000
+    restart: unless-stopped
+
+```
+
 ## Discussion
 ![Discord Shield](https://discordapp.com/api/guilds/1013417395777450034/widget.png?style=shield)
 

@@ -1,0 +1,11 @@
+---
+version: "3.6"
+services:
+  stlib:
+    image: ghcr.io/eduardooliveira/stlib:main
+    container_name: stlib
+    volumes:
+      - ./library:/library
+    ports:
+      - 8000:8000
+    restart: unless-stopped
