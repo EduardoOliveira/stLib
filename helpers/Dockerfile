@@ -25,7 +25,7 @@ WORKDIR /app
 
 COPY --from=go /app/main ./
 COPY --from=go /app/helpers/config.toml ./
-COPY --from=n /app/frontend/dist ./frontend/
+COPY --from=n /app/frontend/dist ./frontend/dist
 RUN mkdir /library
 RUN mkdir /app/cache
 RUN ls -la
