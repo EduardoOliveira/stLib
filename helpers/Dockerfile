@@ -1,4 +1,4 @@
-FROM node:18-alpine3.15 as n
+FROM node:18-alpine3.15 AS n
 
 RUN mkdir app
 WORKDIR /app
@@ -16,15 +16,18 @@ WORKDIR /app
 COPY . .
 
 RUN go build main.go
+RUN ls -la helpers
+RUN pwd
 
 FROM debian:latest
 RUN mkdir -p app/frontend/dist
 WORKDIR /app
 
-COPY --from=go /go/app/main ./
-COPY --from=go /go/app/helpers/config.toml ./
-COPY --from=n /app/frontend/dist ./frontend/
+COPY --from=go /app/main ./
+COPY --from=go /app/helpers/config.toml ./
+COPY --from=n /app/frontend/dist ./frontend/dist
 RUN mkdir /library
+RUN mkdir /app/cache
 RUN ls -la
 RUN pwd
 RUN chmod +x main
