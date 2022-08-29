@@ -1,4 +1,4 @@
-FROM node:18-alpine3.15 as n
+FROM node:18-alpine3.15 AS n
 
 RUN mkdir app
 WORKDIR /app
@@ -16,6 +16,7 @@ WORKDIR /app
 COPY . .
 
 RUN go build main.go
+RUN ls -la helpers
 
 FROM debian:latest
 RUN mkdir -p app/frontend/dist
