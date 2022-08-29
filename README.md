@@ -50,6 +50,7 @@ Join discord if you have any support https://discord.gg/SqxKE3Ve4Z
 - [ ] Allow project creation and file upload
 - [ ] Allow slice upload directly from the slicer
 - [ ] Improve the 3DView
+- [x] Allow model upload
 - [x] Show slice settings (print time, speed, material)
 - [x] Discover slice files in the filesystem
 - [x] Allow default project image definition

@@ -25,11 +25,3 @@ initialized = true
 [images]
 
 [slices]
-
-[default_model]
-  sha1 = "794ccd106d80de8959d11b9c51a579eb5f8326b9"
-  name = "lich-base-54mm.stl"
-  path = "testdata/lich/lich-base-54mm.stl"
-  file_name = "lich-base-54mm.stl"
-  extension = ".stl"
-  mime_type = "model/stl"

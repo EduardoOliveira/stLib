@@ -11,4 +11,5 @@ func Register(e *echo.Group) {
 	group = e
 	group.GET("/render/:sha1", show)
 	group.GET("/get/:sha1", get)
+	group.POST("", upload)
 }

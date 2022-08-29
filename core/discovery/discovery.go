@@ -72,17 +72,11 @@ func walker(path string, d fs.DirEntry, err error) error {
 
 	for _, file := range files {
 		if strings.HasSuffix(file.Name(), ".stl") {
-			var model *state.Model
-			model, err = initModel(path, file)
+
+			err := HandleModel(project, file.Name())
 			if err != nil {
 				log.Printf("error loading the model %q: %v\n", file.Name(), err)
 				continue
-			}
-			state.Models[model.SHA1] = model
-			project.Models[model.SHA1] = model
-
-			if project.DefaultImagePath == "" {
-				project.DefaultImagePath = fmt.Sprintf("/models/render/%s", model.SHA1)
 			}
 
 		} else if (strings.HasSuffix(file.Name(), ".png") || strings.HasSuffix(file.Name(), ".jpg")) &&
@@ -131,25 +125,6 @@ func initProject(project *state.Project) error {
 	}
 
 	return nil
-}
-
-func initModel(path string, file fs.FileInfo) (*state.Model, error) {
-	log.Println("found stls", file.Name())
-	model := &state.Model{
-		Name:     file.Name(),
-		Path:     fmt.Sprintf("%s/%s", path, file.Name()),
-		FileName: file.Name(),
-	}
-	model.Extension = filepath.Ext(model.FileName)
-	model.MimeType = mime.TypeByExtension(model.Extension)
-
-	var err error
-	model.SHA1, err = getFileSha1(model.Path)
-	if err != nil {
-		return nil, err
-	}
-
-	return model, nil
 }
 
 func initImage(path string, file fs.FileInfo) (*state.ProjectImage, error) {
