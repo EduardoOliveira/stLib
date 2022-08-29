@@ -8,6 +8,9 @@ Many of us hoard a tone of STL's from public sites, pathreons and so forth. Keep
 ## Approch
 The main goal is to achive a self-hostable platform that work on top of the organization you already have, allowing you to have a nice overview of what you have collected so far.
 
+## Demo website
+https://demo.knoker.eu/projects
+
 ## Screenshots
 
 ### Home page with filter by project name and tags
