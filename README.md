@@ -36,6 +36,18 @@ https://demo.knoker.eu/projects
 - Have fun.
 - When something blows up please contact me on discord :)
 
+## configuration
+
+```toml	
+port = 8000 # port to run the server on
+library_path = "/library" # path to the stl library
+max_render_workers = 5 # max number of workers to render the 3d model images in parallel shouldn't exceed the number of cpu cores
+file_blacklist = [".potato",".example"] # list of files to ignore when searching for stl and assets files in the library_path
+model_render_color = "#167DF0" # color to render the 3d model
+model_background_color =  "#FFFFFF" # color to render the 3d model background
+
+```
+
 ## docker-compose
 
 ```yaml
@@ -47,6 +59,7 @@ services:
     container_name: stlib
     volumes:
       - ./library:/library
+      - ./config.toml:/app/config.toml #if you want to change the config
     ports:
       - 8000:8000
     restart: unless-stopped
