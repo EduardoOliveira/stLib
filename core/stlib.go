@@ -2,12 +2,14 @@ package stlib
 
 import (
 	"fmt"
+	"io"
 	"log"
+	"os"
 
-	"github.com/BurntSushi/toml"
 	"github.com/eduardooliveira/stLib/core/discovery"
 	"github.com/eduardooliveira/stLib/core/images"
 	"github.com/eduardooliveira/stLib/core/models"
+	"github.com/eduardooliveira/stLib/core/projectFiles"
 	"github.com/eduardooliveira/stLib/core/projects"
 	"github.com/eduardooliveira/stLib/core/runtime"
 	"github.com/eduardooliveira/stLib/core/slices"
@@ -16,11 +18,13 @@ import (
 )
 
 func Run() {
-
-	_, err := toml.DecodeFile("config.toml", &runtime.Cfg)
+	f, err := os.OpenFile("stlib.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
-		log.Fatal("Unable to read config file: ", err)
+		log.Fatalf("error opening file: %v", err)
 	}
+	defer f.Close()
+	wrt := io.MultiWriter(os.Stdout, f)
+	log.SetOutput(wrt)
 
 	discovery.Run(runtime.Cfg.LibraryPath)
 	fmt.Println("starting server...")
@@ -40,6 +44,7 @@ func Run() {
 
 	slices.Register(api.Group("/slices"))
 	images.Register(api.Group("/images"))
+	projectFiles.Register(api.Group("/files"))
 	models.Register(api.Group("/models"))
 	projects.Register(api.Group("/projects"))
 

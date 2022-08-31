@@ -1,19 +1,19 @@
 package discovery
 
 import (
-	"crypto/sha1"
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/fs"
 	"io/ioutil"
 	"log"
-	"mime"
-	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/BurntSushi/toml"
+	"github.com/eduardooliveira/stLib/core/images"
+	"github.com/eduardooliveira/stLib/core/models"
+	"github.com/eduardooliveira/stLib/core/projectFiles"
+	"github.com/eduardooliveira/stLib/core/runtime"
 	sl "github.com/eduardooliveira/stLib/core/slices"
 	"github.com/eduardooliveira/stLib/core/state"
 	"github.com/google/uuid"
@@ -59,6 +59,7 @@ func walker(path string, d fs.DirEntry, err error) error {
 		Models:      make(map[string]*state.Model),
 		Images:      make(map[string]*state.ProjectImage),
 		Slices:      make(map[string]*state.Slice),
+		Files:       make(map[string]*state.ProjectFile),
 	}
 
 	if slices.Contains(fNames, ".project.stlib") {
@@ -68,38 +69,58 @@ func walker(path string, d fs.DirEntry, err error) error {
 			log.Printf("error loading the project %q: %v\n", path, err)
 			return err
 		}
+		if !project.Initialized {
+			pathTags := strings.Split(path, "/")
+			pathTags = pathTags[:len(pathTags)-1]
+			if len(pathTags) > 1 {
+				pathTags = pathTags[1:]
+			} else {
+				pathTags = make([]string, 0)
+			}
+			project.Tags = pathTags
+		}
 	}
 
 	for _, file := range files {
-		if strings.HasSuffix(file.Name(), ".stl") {
+		if file.IsDir() {
+			continue
+		}
+		blacklisted := false
+		for _, blacklist := range runtime.Cfg.FileBlacklist {
+			if strings.HasSuffix(file.Name(), blacklist) {
+				blacklisted = true
+				break
+			}
+		}
+		if blacklisted {
+			continue
+		}
+		if strings.HasSuffix(file.Name(), ".stl") || strings.HasSuffix(file.Name(), ".STL") {
 
-			err := HandleModel(project, file.Name())
+			err := models.HandleModel(project, file.Name())
 			if err != nil {
 				log.Printf("error loading the model %q: %v\n", file.Name(), err)
 				continue
 			}
 
-		} else if (strings.HasSuffix(file.Name(), ".png") || strings.HasSuffix(file.Name(), ".jpg")) &&
-			!strings.HasSuffix(file.Name(), ".thumb.png") {
+		} else if strings.HasSuffix(file.Name(), ".png") || strings.HasSuffix(file.Name(), ".jpg") {
 
-			img, err := initImage(path, file)
+			err := images.HandleImage(project, file.Name())
 			if err != nil {
 				log.Printf("error loading the image %q: %v\n", file.Name(), err)
 				continue
 			}
-			state.Images[img.SHA1] = img
-			project.Images[img.SHA1] = img
-		} else if strings.HasSuffix(file.Name(), ".gcode") {
-			slice, err := initSliceGcode(path, file)
+		} else if strings.HasSuffix(file.Name(), ".gcode") || strings.HasSuffix(file.Name(), ".GCODE") {
+			err := sl.HandleGcodeSlice(project, file.Name())
 			if err != nil {
 				log.Printf("error loading the gcode %q: %v\n", file.Name(), err)
 				continue
 			}
-			state.Slices[slice.SHA1] = slice
-			project.Slices[slice.SHA1] = slice
-			if slice.Image != nil {
-				project.Images[slice.Image.SHA1] = slice.Image
-				state.Images[slice.Image.SHA1] = slice.Image
+		} else {
+			err := projectFiles.HandleFile(project, file.Name())
+			if err != nil {
+				log.Printf("error loading the generic file %q: %v\n", file.Name(), err)
+				continue
 			}
 		}
 
@@ -127,49 +148,6 @@ func initProject(project *state.Project) error {
 	return nil
 }
 
-func initImage(path string, file fs.FileInfo) (*state.ProjectImage, error) {
-	log.Println("found image", file.Name())
-	img := &state.ProjectImage{
-		Name:      file.Name(),
-		Path:      fmt.Sprintf("%s/%s", path, file.Name()),
-		Extension: filepath.Ext(file.Name()),
-	}
-	img.MimeType = mime.TypeByExtension(img.Extension)
-
-	var err error
-	img.SHA1, err = getFileSha1(img.Path)
-	if err != nil {
-		return nil, err
-	}
-
-	return img, nil
-}
-
-func initSliceGcode(path string, file fs.FileInfo) (*state.Slice, error) {
-	log.Println("found gcode", file.Name())
-	s := &state.Slice{
-		Name:      file.Name(),
-		Path:      fmt.Sprintf("%s/%s", path, file.Name()),
-		Extension: ".gcode",
-		MimeType:  mime.TypeByExtension(".gcode"),
-		Filament:  &state.Filament{},
-	}
-	s.MimeType = mime.TypeByExtension(s.Extension)
-
-	var err error
-	s.SHA1, err = getFileSha1(s.Path)
-	if err != nil {
-		return nil, err
-	}
-
-	err = sl.GcodeToSlice(s, path)
-	if err != nil {
-		return nil, err
-	}
-
-	return s, nil
-}
-
 func getDirFileSlice(files []fs.FileInfo) ([]string, error) {
 
 	fNames := make([]string, 0)
@@ -178,18 +156,4 @@ func getDirFileSlice(files []fs.FileInfo) ([]string, error) {
 	}
 
 	return fNames, nil
-}
-
-func getFileSha1(path string) (string, error) {
-	f, err := os.Open(path)
-	if err != nil {
-		return "", err
-	}
-	defer f.Close()
-
-	h := sha1.New()
-	if _, err := io.Copy(h, f); err != nil {
-		return "", err
-	}
-	return fmt.Sprintf("%x", h.Sum(nil)), nil
 }

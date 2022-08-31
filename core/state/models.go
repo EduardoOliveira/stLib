@@ -8,6 +8,7 @@ type Project struct {
 	Models           map[string]*Model        `json:"-" toml:"models" form:"models" query:"models"`
 	Images           map[string]*ProjectImage `json:"-" toml:"images" form:"images" query:"images"`
 	Slices           map[string]*Slice        `json:"-" toml:"slices" form:"slices" query:"slices"`
+	Files            map[string]*ProjectFile  `json:"-" toml:"files" form:"files" query:"files"`
 	Tags             []string                 `json:"tags" toml:"tags" form:"tags" query:"tags"`
 	DefaultImagePath string                   `json:"default_image_path" toml:"default_image_path" form:"default_image_path" query:"default_image_path"`
 	Initialized      bool                     `json:"initialized" toml:"initialized" form:"initialized" query:"initialized"`
@@ -29,6 +30,15 @@ type ProjectImage struct {
 	Path      string `json:"path" toml:"path" form:"path" query:"path"`
 	Extension string `json:"extension" toml:"extension" form:"extension" query:"extension"`
 	ModelSHA1 string `json:"model_sha1" toml:"model_sha1" form:"model_sha1" query:"model_sha1"`
+	MimeType  string `json:"mime_type" toml:"mime_type" form:"mime_type" query:"mime_type"`
+}
+
+type ProjectFile struct {
+	SHA1      string `json:"sha1" toml:"sha1" form:"sha1" query:"sha1"`
+	Name      string `json:"name" toml:"name" form:"name" query:"name"`
+	Path      string `json:"path" toml:"path" form:"path" query:"path"`
+	FileName  string `json:"file_name" toml:"file_name" form:"file_name" query:"file_name"`
+	Extension string `json:"extension" toml:"extension" form:"extension" query:"extension"`
 	MimeType  string `json:"mime_type" toml:"mime_type" form:"mime_type" query:"mime_type"`
 }
 

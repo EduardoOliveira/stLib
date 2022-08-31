@@ -1,4 +1,4 @@
-package slices
+package projectFiles
 
 import (
 	"github.com/labstack/echo/v4"

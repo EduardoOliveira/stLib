@@ -44,7 +44,6 @@ func GcodeToSlice(s *state.Slice, path string) error {
 			if strings.HasPrefix(line, "thumbnail begin") {
 
 				header := strings.Split(line, " ")
-				log.Println(header)
 				length, err := strconv.Atoi(header[3])
 				if err != nil {
 					return err
@@ -100,11 +99,7 @@ func parseComment(s *state.Slice, line string) {
 	if strings.HasPrefix(line, "SuperSlicer_config") {
 		s.Slicer = "SuperSlicer"
 	} else if strings.HasPrefix(line, "filament used [mm]") {
-
-		log.Println(line)
 		s.Filament.Length = parseGcodeParamFloat(line)
-
-		log.Println(line)
 	} else if strings.HasPrefix(line, "filament used [cm3]") {
 		s.Filament.Mass = parseGcodeParamFloat(line)
 	} else if strings.HasPrefix(line, "filament used [g]") {

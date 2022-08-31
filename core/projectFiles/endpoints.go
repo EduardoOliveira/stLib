@@ -1,4 +1,4 @@
-package images
+package projectFiles
 
 import (
 	"fmt"
@@ -12,15 +12,14 @@ import (
 )
 
 func get(c echo.Context) error {
-	image, ok := state.Images[c.Param("sha1")]
+	s, ok := state.Files[c.Param("sha1")]
 
 	if !ok {
 		return c.NoContent(http.StatusNotFound)
 	}
 
-	return c.Attachment(image.Path, image.Name)
+	return c.Attachment(s.Path, s.Name)
 }
-
 func upload(c echo.Context) error {
 	projectUUID := c.FormValue("project")
 
@@ -41,7 +40,6 @@ func upload(c echo.Context) error {
 	}
 	defer src.Close()
 
-	// Destination
 	dst, err := os.Create(fmt.Sprintf("%s/%s", project.Path, file.Filename))
 	if err != nil {
 		log.Println("Error creating the file: ", err)
@@ -49,13 +47,12 @@ func upload(c echo.Context) error {
 	}
 	defer dst.Close()
 
-	// Copy
 	if _, err = io.Copy(dst, src); err != nil {
 		log.Println("Error copying the file: ", err)
 		return err
 	}
 
-	err = HandleImage(project, file.Filename)
+	err = HandleFile(project, file.Filename)
 	if err != nil {
 		log.Println("Error handling the model: ", err)
 		return err

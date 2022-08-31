@@ -1,4 +1,4 @@
-package discovery
+package models
 
 import (
 	"fmt"
@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/eduardooliveira/stLib/core/state"
+	"github.com/eduardooliveira/stLib/core/utils"
 )
 
 func HandleModel(project *state.Project, name string) error {
@@ -35,7 +36,7 @@ func initModel(path string, name string) (*state.Model, error) {
 	model.MimeType = mime.TypeByExtension(model.Extension)
 
 	var err error
-	model.SHA1, err = getFileSha1(model.Path)
+	model.SHA1, err = utils.GetFileSha1(model.Path)
 	if err != nil {
 		return nil, err
 	}

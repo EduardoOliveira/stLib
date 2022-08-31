@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/eduardooliveira/stLib/core/runtime"
 	"github.com/eduardooliveira/stLib/core/state"
 	"github.com/fogleman/fauxgl"
 	"github.com/nfnt/resize"
@@ -20,20 +21,32 @@ const (
 )
 
 var (
-	eye    = fauxgl.V(-3, -3, -0.75)               // camera position
-	center = fauxgl.V(0, -0.07, 0)                 // view center position
-	up     = fauxgl.V(0, 0, 1)                     // up vector
-	light  = fauxgl.V(-0.75, -5, 0.25).Normalize() // light direction
-	color  = fauxgl.HexColor("#468966")            // object color
+	eye    = fauxgl.V(-3, -3, -0.75)                       // camera position
+	center = fauxgl.V(0, -0.07, 0)                         // view center position
+	up     = fauxgl.V(0, 0, 1)                             // up vector
+	light  = fauxgl.V(-0.75, -5, 0.25).Normalize()         // light direction
+	color  = fauxgl.HexColor(runtime.Cfg.ModelRenderColor) // object color
 )
+
+type cacheJob struct {
+	cacheKey string
+	model    *state.Model
+	err      chan error
+}
+
+var cacheJobs chan *cacheJob
 
 func getImage(model *state.Model) ([]byte, error) {
 	cacheKey := fmt.Sprintf("cache/%s.png", model.SHA1)
 	if _, err := os.Stat(cacheKey); err != nil {
-		if err := renderCache(cacheKey, model); err != nil {
+		errChan := make(chan error, 1)
+		cacheJobs <- &cacheJob{cacheKey, model, errChan}
+		log.Println("produced", cacheKey)
+		if err := <-errChan; err != nil {
 			log.Println(err)
 			return nil, err
 		}
+		log.Println("terminated", cacheKey)
 	}
 	b, err := os.ReadFile(cacheKey)
 	if err != nil {
@@ -41,6 +54,18 @@ func getImage(model *state.Model) ([]byte, error) {
 		return nil, err
 	}
 	return b, nil
+}
+
+func renderWorker(jobs <-chan *cacheJob) {
+	for job := range jobs {
+		go func(job *cacheJob) {
+			log.Println("rendering", job.cacheKey)
+			err := renderCache(job.cacheKey, job.model)
+			log.Println(err)
+			job.err <- err
+			log.Println("rendered", job.cacheKey)
+		}(job)
+	}
 }
 
 func renderCache(cacheKey string, model *state.Model) error {
@@ -60,7 +85,7 @@ func renderCache(cacheKey string, model *state.Model) error {
 
 	// create a rendering context
 	context := fauxgl.NewContext(width*scale, height*scale)
-	context.ClearColorBufferWith(fauxgl.HexColor("#FFFFFF"))
+	context.ClearColorBufferWith(fauxgl.HexColor(runtime.Cfg.ModelBackgroundColor))
 
 	// create transformation matrix and light direction
 	aspect := float64(width) / float64(height)

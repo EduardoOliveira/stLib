@@ -42,6 +42,7 @@ func showImages(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, maps.Values(project.Images))
 }
+
 func showSlices(c echo.Context) error {
 	uuid := c.Param("uuid")
 	project, ok := state.Projects[uuid]
@@ -50,6 +51,16 @@ func showSlices(c echo.Context) error {
 		return c.NoContent(http.StatusNotFound)
 	}
 	return c.JSON(http.StatusOK, maps.Values(project.Slices))
+}
+
+func showFiles(c echo.Context) error {
+	uuid := c.Param("uuid")
+	project, ok := state.Projects[uuid]
+
+	if !ok {
+		return c.NoContent(http.StatusNotFound)
+	}
+	return c.JSON(http.StatusOK, maps.Values(project.Files))
 }
 
 func update(c echo.Context) error {

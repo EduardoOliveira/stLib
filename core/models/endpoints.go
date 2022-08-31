@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/eduardooliveira/stLib/core/discovery"
 	"github.com/eduardooliveira/stLib/core/state"
 	"github.com/labstack/echo/v4"
 )
@@ -15,8 +14,6 @@ import (
 func show(c echo.Context) error {
 
 	model, ok := state.Models[c.Param("sha1")]
-
-	log.Println(state.Models, c.Param("sha1"))
 
 	if !ok {
 		return c.String(http.StatusNotFound, "Model not found")
@@ -32,8 +29,6 @@ func show(c echo.Context) error {
 func get(c echo.Context) error {
 
 	model, ok := state.Models[c.Param("sha1")]
-
-	log.Println(state.Models, c.Param("sha1"))
 
 	if !ok {
 		return c.String(http.StatusNotFound, "Model not found")
@@ -76,7 +71,7 @@ func upload(c echo.Context) error {
 		return err
 	}
 
-	err = discovery.HandleModel(project, file.Filename)
+	err = HandleModel(project, file.Filename)
 	if err != nil {
 		log.Println("Error handling the model: ", err)
 		return err
