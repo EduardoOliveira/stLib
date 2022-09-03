@@ -96,7 +96,7 @@ Join discord if you need any support https://discord.gg/SqxKE3Ve4Z
 - [x] Allow 3DView of the models
 - [x] Allow multiple models in the 3DView
 
-## TODO Techical
+## TODO Technical
 
 - [x] Launch a demo instance
 - [x] Build a docker image
