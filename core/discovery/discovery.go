@@ -16,7 +16,6 @@ import (
 	"github.com/eduardooliveira/stLib/core/runtime"
 	sl "github.com/eduardooliveira/stLib/core/slices"
 	"github.com/eduardooliveira/stLib/core/state"
-	"github.com/google/uuid"
 	"golang.org/x/exp/slices"
 )
 
@@ -40,47 +39,77 @@ func walker(path string, d fs.DirEntry, err error) error {
 		return nil
 	}
 	log.Printf("walking the path %q\n", path)
-	files, err := ioutil.ReadDir(path)
+
+	project := state.NewProject(path)
+
+	DiscoverProjectAssets(project)
+
+	if len(project.Models) > 0 {
+		err = state.PersistProject(project)
+		if err != nil {
+			log.Printf("error persisting the project %q: %v\n", path, err)
+			return err
+		}
+		state.Projects[project.UUID] = project
+	}
+	return nil
+}
+
+func DiscoverProjectAssets(project *state.Project) error {
+	files, err := ioutil.ReadDir(project.Path)
 	if err != nil {
 		return err
 	}
 	fNames, err := getDirFileSlice(files)
 	if err != nil {
-		log.Printf("error reading the directory %q: %v\n", path, err)
+		log.Printf("error reading the directory %q: %v\n", project.Path, err)
 		return err
 	}
 
-	project := &state.Project{
-		UUID:        uuid.New().String(),
-		Name:        filepath.Base(path),
-		Path:        path,
-		Initialized: false,
-		Tags:        make([]string, 0),
-		Models:      make(map[string]*state.Model),
-		Images:      make(map[string]*state.ProjectImage),
-		Slices:      make(map[string]*state.Slice),
-		Files:       make(map[string]*state.ProjectFile),
-	}
-
 	if slices.Contains(fNames, ".project.stlib") {
-		log.Println("found project", path)
+		log.Println("found project", project.Path)
 		err = initProject(project)
 		if err != nil {
-			log.Printf("error loading the project %q: %v\n", path, err)
+			log.Printf("error loading the project %q: %v\n", project.Path, err)
 			return err
 		}
 		if !project.Initialized {
-			pathTags := strings.Split(path, "/")
-			pathTags = pathTags[:len(pathTags)-1]
-			if len(pathTags) > 1 {
-				pathTags = pathTags[1:]
-			} else {
-				pathTags = make([]string, 0)
-			}
-			project.Tags = pathTags
+			project.Tags = pathToTags(project.Path)
 		}
 	}
 
+	err = initProjectAssets(project, files)
+	if err != nil {
+		log.Printf("error loading the project %q: %v\n", project.Path, err)
+		return err
+	}
+
+	return nil
+}
+
+func pathToTags(path string) []string {
+	tags := strings.Split(path, "/")
+	tags = tags[:len(tags)-1]
+	if len(tags) > 1 {
+		tags = tags[1:]
+	} else {
+		tags = make([]string, 0)
+	}
+	return tags
+}
+
+func initProject(project *state.Project) error {
+	project.Initialized = true
+	_, err := toml.DecodeFile(fmt.Sprintf("%s/.project.stlib", project.Path), &project)
+	if err != nil {
+		log.Printf("error decoding the project %q: %v\n", project.Path, err)
+		return err
+	}
+
+	return nil
+}
+
+func initProjectAssets(project *state.Project, files []fs.FileInfo) error {
 	for _, file := range files {
 		if file.IsDir() {
 			continue
@@ -96,13 +125,11 @@ func walker(path string, d fs.DirEntry, err error) error {
 			continue
 		}
 		if strings.HasSuffix(file.Name(), ".stl") || strings.HasSuffix(file.Name(), ".STL") {
-
 			err := models.HandleModel(project, file.Name())
 			if err != nil {
 				log.Printf("error loading the model %q: %v\n", file.Name(), err)
 				continue
 			}
-
 		} else if strings.HasSuffix(file.Name(), ".png") || strings.HasSuffix(file.Name(), ".jpg") {
 
 			err := images.HandleImage(project, file.Name())
@@ -124,25 +151,6 @@ func walker(path string, d fs.DirEntry, err error) error {
 			}
 		}
 
-	}
-
-	if len(project.Models) > 0 {
-		err = state.PersistProject(project)
-		if err != nil {
-			log.Printf("error persisting the project %q: %v\n", path, err)
-			return err
-		}
-		state.Projects[project.UUID] = project
-	}
-	return nil
-}
-
-func initProject(project *state.Project) error {
-	project.Initialized = true
-	_, err := toml.DecodeFile(fmt.Sprintf("%s/.project.stlib", project.Path), &project)
-	if err != nil {
-		log.Printf("error decoding the project %q: %v\n", project.Path, err)
-		return err
 	}
 
 	return nil
