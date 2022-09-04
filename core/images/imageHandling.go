@@ -10,16 +10,16 @@ import (
 	"github.com/eduardooliveira/stLib/core/utils"
 )
 
-func HandleImage(project *state.Project, name string) error {
+func HandleImage(project *state.Project, name string) (*state.ProjectImage, error) {
 	var image *state.ProjectImage
 	image, err := initImage(project.Path, name)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	state.Images[image.SHA1] = image
 	project.Images[image.SHA1] = image
 
-	return nil
+	return image, nil
 }
 
 func initImage(path string, name string) (*state.ProjectImage, error) {

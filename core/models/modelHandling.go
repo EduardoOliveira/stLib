@@ -10,11 +10,11 @@ import (
 	"github.com/eduardooliveira/stLib/core/utils"
 )
 
-func HandleModel(project *state.Project, name string) error {
+func HandleModel(project *state.Project, name string) (*state.Model, error) {
 	var model *state.Model
 	model, err := initModel(project.Path, name)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	state.Models[model.SHA1] = model
 	project.Models[model.SHA1] = model
@@ -22,7 +22,7 @@ func HandleModel(project *state.Project, name string) error {
 	if project.DefaultImagePath == "" {
 		project.DefaultImagePath = fmt.Sprintf("/models/render/%s", model.SHA1)
 	}
-	return nil
+	return model, nil
 }
 
 func initModel(path string, name string) (*state.Model, error) {

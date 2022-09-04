@@ -3,6 +3,7 @@ package state
 type Project struct {
 	UUID             string                   `json:"uuid" toml:"uuid" form:"uuid" query:"uuid"`
 	Name             string                   `json:"name" toml:"name" form:"name" query:"name"`
+	Description      string                   `json:"description" toml:"description" form:"description" query:"description"`
 	Path             string                   `json:"path" toml:"path" form:"path" query:"path"`
 	ExternalLink     string                   `json:"external_link" toml:"external_link" form:"external_link" query:"external_link"`
 	Models           map[string]*Model        `json:"-" toml:"models" form:"models" query:"models"`

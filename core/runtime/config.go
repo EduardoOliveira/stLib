@@ -7,12 +7,14 @@ import (
 )
 
 type Config struct {
-	LibraryPath      string   `toml:"library_path"`
-	Port             int      `toml:"port"`
-	MaxRenderWorkers int      `toml:"max_render_workers"`
-	FileBlacklist    []string `toml:"file_blacklist"`
-	ModelRenderColor string   `toml:"model_render_color"`
+	LibraryPath          string   `toml:"library_path"`
+	TempPath             string   `toml:"temp_path"`
+	Port                 int      `toml:"port"`
+	MaxRenderWorkers     int      `toml:"max_render_workers"`
+	FileBlacklist        []string `toml:"file_blacklist"`
+	ModelRenderColor     string   `toml:"model_render_color"`
 	ModelBackgroundColor string   `toml:"model_background_color"`
+	ThingiverseToken     string   `toml:"thingiverse_token"`
 }
 
 var Cfg *Config

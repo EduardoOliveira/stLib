@@ -53,7 +53,7 @@ func upload(c echo.Context) error {
 	}
 
 	//TODO: handle other file types
-	err = HandleGcodeSlice(project, file.Filename)
+	_, err = HandleGcodeSlice(project, file.Filename)
 	if err != nil {
 		log.Println("Error handling the model: ", err)
 		return err

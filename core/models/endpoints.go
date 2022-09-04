@@ -71,7 +71,7 @@ func upload(c echo.Context) error {
 		return err
 	}
 
-	err = HandleModel(project, file.Filename)
+	_, err = HandleModel(project, file.Filename)
 	if err != nil {
 		log.Println("Error handling the model: ", err)
 		return err

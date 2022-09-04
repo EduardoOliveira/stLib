@@ -16,11 +16,16 @@ var Images = make(map[string]*ProjectImage)
 var Slices = make(map[string]*Slice)
 var Files = make(map[string]*ProjectFile)
 
-func NewProject(path string) *Project {
+func NewProjectFromPath(path string) *Project {
+	project := NewProject()
+	project.Path = path
+	project.Name = filepath.Base(path)
+	return project
+}
+
+func NewProject() *Project {
 	project := &Project{
 		UUID:        uuid.New().String(),
-		Name:        filepath.Base(path),
-		Path:        path,
 		Initialized: false,
 		Tags:        make([]string, 0),
 		Models:      make(map[string]*Model),

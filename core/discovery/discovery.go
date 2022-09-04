@@ -40,9 +40,12 @@ func walker(path string, d fs.DirEntry, err error) error {
 	}
 	log.Printf("walking the path %q\n", path)
 
-	project := state.NewProject(path)
+	project := state.NewProjectFromPath(path)
 
-	DiscoverProjectAssets(project)
+	err = DiscoverProjectAssets(project)
+	if err != nil {
+		return err
+	}
 
 	if len(project.Models) > 0 {
 		err = state.PersistProject(project)
@@ -125,26 +128,26 @@ func initProjectAssets(project *state.Project, files []fs.FileInfo) error {
 			continue
 		}
 		if strings.HasSuffix(file.Name(), ".stl") || strings.HasSuffix(file.Name(), ".STL") {
-			err := models.HandleModel(project, file.Name())
+			_, err := models.HandleModel(project, file.Name())
 			if err != nil {
 				log.Printf("error loading the model %q: %v\n", file.Name(), err)
 				continue
 			}
 		} else if strings.HasSuffix(file.Name(), ".png") || strings.HasSuffix(file.Name(), ".jpg") {
 
-			err := images.HandleImage(project, file.Name())
+			_, err := images.HandleImage(project, file.Name())
 			if err != nil {
 				log.Printf("error loading the image %q: %v\n", file.Name(), err)
 				continue
 			}
 		} else if strings.HasSuffix(file.Name(), ".gcode") || strings.HasSuffix(file.Name(), ".GCODE") {
-			err := sl.HandleGcodeSlice(project, file.Name())
+			_, err := sl.HandleGcodeSlice(project, file.Name())
 			if err != nil {
 				log.Printf("error loading the gcode %q: %v\n", file.Name(), err)
 				continue
 			}
 		} else {
-			err := projectFiles.HandleFile(project, file.Name())
+			_, err := projectFiles.HandleFile(project, file.Name())
 			if err != nil {
 				log.Printf("error loading the generic file %q: %v\n", file.Name(), err)
 				continue

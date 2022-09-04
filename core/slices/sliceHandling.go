@@ -9,11 +9,11 @@ import (
 	"github.com/eduardooliveira/stLib/core/utils"
 )
 
-func HandleGcodeSlice(project *state.Project, name string) error {
+func HandleGcodeSlice(project *state.Project, name string) (*state.Slice, error) {
 	slice, err := initSliceGcode(project.Path, name)
 	if err != nil {
 		log.Printf("error loading the gcode %q: %v\n", name, err)
-		return err
+		return nil, err
 	}
 	state.Slices[slice.SHA1] = slice
 	project.Slices[slice.SHA1] = slice
@@ -21,7 +21,7 @@ func HandleGcodeSlice(project *state.Project, name string) error {
 		project.Images[slice.Image.SHA1] = slice.Image
 		state.Images[slice.Image.SHA1] = slice.Image
 	}
-	return nil
+	return slice, nil
 }
 
 func initSliceGcode(path string, name string) (*state.Slice, error) {

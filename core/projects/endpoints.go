@@ -168,7 +168,7 @@ func new(c echo.Context) error {
 		}
 
 	}
-	project := state.NewProject(path)
+	project := state.NewProjectFromPath(path)
 
 	err = discovery.DiscoverProjectAssets(project)
 	if err != nil {

@@ -10,16 +10,16 @@ import (
 	"github.com/eduardooliveira/stLib/core/utils"
 )
 
-func HandleFile(project *state.Project, name string) error {
+func HandleFile(project *state.Project, name string) (*state.ProjectFile, error) {
 	var projectFile *state.ProjectFile
 	projectFile, err := initProjectFile(project.Path, name)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	state.Files[projectFile.SHA1] = projectFile
 	project.Files[projectFile.SHA1] = projectFile
 
-	return nil
+	return projectFile, nil
 }
 
 func initProjectFile(path string, name string) (*state.ProjectFile, error) {
