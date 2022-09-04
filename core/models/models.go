@@ -9,6 +9,8 @@ import (
 
 var group *echo.Group
 
+var ModelExtensions = []string{".stl"}
+
 func Register(e *echo.Group) {
 
 	group = e

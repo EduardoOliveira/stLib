@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/eduardooliveira/stLib/core/state"
+	"github.com/eduardooliveira/stLib/core/utils"
 	"github.com/labstack/echo/v4"
 )
 
@@ -18,7 +19,13 @@ func get(c echo.Context) error {
 		return c.NoContent(http.StatusNotFound)
 	}
 
-	return c.Attachment(image.Path, image.Name)
+	project, ok := state.Projects[image.ProjectUUID]
+
+	if !ok {
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	return c.Attachment(utils.ToLibPath(fmt.Sprintf("%s/%s", project.Path, image.Path)), image.Name)
 }
 
 func upload(c echo.Context) error {
@@ -55,7 +62,7 @@ func upload(c echo.Context) error {
 		return err
 	}
 
-	err = HandleImage(project, file.Filename)
+	_, err = HandleImage(project, file.Filename)
 	if err != nil {
 		log.Println("Error handling the model: ", err)
 		return err

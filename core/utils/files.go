@@ -4,11 +4,16 @@ import (
 	"crypto/sha1"
 	"fmt"
 	"io"
+	"log"
 	"os"
+	"path"
+	"strings"
+
+	"github.com/eduardooliveira/stLib/core/runtime"
 )
 
 func GetFileSha1(path string) (string, error) {
-	f, err := os.Open(path)
+	f, err := os.Open(ToLibPath(path))
 	if err != nil {
 		return "", err
 	}
@@ -19,4 +24,20 @@ func GetFileSha1(path string) (string, error) {
 		return "", err
 	}
 	return fmt.Sprintf("%x", h.Sum(nil)), nil
+}
+
+func ToLibPath(path string) string {
+	if strings.HasPrefix(path, runtime.Cfg.LibraryPath) {
+		return path
+	}
+	return fmt.Sprintf("%s/%s", runtime.Cfg.LibraryPath, path)
+}
+
+func Move(src, dst string) error {
+	log.Print(path.Dir(dst))
+	if err := os.MkdirAll(path.Dir(dst), os.ModePerm); err != nil {
+		return err
+	}
+
+	return os.Rename(src, ToLibPath(dst))
 }

@@ -1,16 +1,18 @@
-uuid = "3b24cd51-a935-47ec-94d5-43d257655fc0"
+uuid = "a983a021-6ac1-478a-9ba7-b37cf4e9d0f6"
 name = "drill"
-path = "testdata/drill"
+description = ""
+path = "drill"
 external_link = ""
 tags = []
 default_image_path = "/models/render/ab3e01c36ca4d5c89af85841ff9f53c9bbe747f8"
-initialized = false
+initialized = true
 
 [models]
   [models.ab3e01c36ca4d5c89af85841ff9f53c9bbe747f8]
     sha1 = "ab3e01c36ca4d5c89af85841ff9f53c9bbe747f8"
     name = "Drill_Wall_Mount_001.stl"
-    path = "testdata/drill/Drill_Wall_Mount_001.stl"
+    project_uuid = "a983a021-6ac1-478a-9ba7-b37cf4e9d0f6"
+    path = "Drill_Wall_Mount_001.stl"
     file_name = "Drill_Wall_Mount_001.stl"
     extension = ".stl"
     mime_type = "model/stl"
@@ -18,3 +20,5 @@ initialized = false
 [images]
 
 [slices]
+
+[files]

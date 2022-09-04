@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/eduardooliveira/stLib/core/discovery"
+	"github.com/eduardooliveira/stLib/core/downloader"
 	"github.com/eduardooliveira/stLib/core/images"
 	"github.com/eduardooliveira/stLib/core/models"
 	"github.com/eduardooliveira/stLib/core/projectFiles"
@@ -47,6 +48,7 @@ func Run() {
 	projectFiles.Register(api.Group("/files"))
 	models.Register(api.Group("/models"))
 	projects.Register(api.Group("/projects"))
+	downloader.Register(api.Group("/downloader"))
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", runtime.Cfg.Port)))
 }
