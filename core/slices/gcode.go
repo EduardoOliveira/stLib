@@ -108,6 +108,11 @@ func parseComment(s *state.Slice, line string) {
 		s.Cost = parseGcodeParamFloat(line)
 	} else if strings.HasPrefix(line, "total layers count") {
 		s.LayerCount = parseGcodeParamInt(line)
+	} else if strings.HasPrefix(line, "estimated printing time (normal mode)") {
+		//https://stackoverflow.com/a/66053163/768516
+		//((?P<day>\d*)d\s)?((?P<hour>\d*)h\s)?((?P<min>\d*)m\s)?((?P<sec>\d*)s)?
+		s.Duration = parseGcodeParamString(line)
+
 	}
 
 }

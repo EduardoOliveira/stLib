@@ -54,6 +54,7 @@ type Slice struct {
 	Filament   *Filament     `json:"filament" toml:"filament" form:"filament" query:"filament"`
 	Cost       float64       `json:"cost" toml:"cost" form:"cost" query:"cost"`
 	LayerCount int           `json:"layer_count" toml:"layer_count" form:"layer_count" query:"layer_count"`
+	Duration   string        `json:"duration" toml:"duration" form:"duration" query:"duration"`
 }
 
 type Filament struct {
