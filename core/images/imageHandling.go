@@ -12,7 +12,7 @@ import (
 
 func HandleImage(project *state.Project, name string) (*state.ProjectImage, error) {
 	var image *state.ProjectImage
-	image, err := initImage(project.Path, name)
+	image, err := initImage(project.Path, name, project)
 	if err != nil {
 		return nil, err
 	}
@@ -22,17 +22,18 @@ func HandleImage(project *state.Project, name string) (*state.ProjectImage, erro
 	return image, nil
 }
 
-func initImage(path string, name string) (*state.ProjectImage, error) {
+func initImage(path string, name string, project *state.Project) (*state.ProjectImage, error) {
 	log.Println("found image", name)
 	img := &state.ProjectImage{
-		Name:      name,
-		Path:      fmt.Sprintf("%s/%s", path, name),
-		Extension: filepath.Ext(name),
+		Name:        name,
+		Path:        name,
+		ProjectUUID: project.UUID,
+		Extension:   filepath.Ext(name),
 	}
 	img.MimeType = mime.TypeByExtension(img.Extension)
 
 	var err error
-	img.SHA1, err = utils.GetFileSha1(img.Path)
+	img.SHA1, err = utils.GetFileSha1(fmt.Sprintf("%s/%s", project.Path, img.Path))
 	if err != nil {
 		return nil, err
 	}

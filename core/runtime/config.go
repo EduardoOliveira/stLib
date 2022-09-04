@@ -8,7 +8,6 @@ import (
 
 type Config struct {
 	LibraryPath          string   `toml:"library_path"`
-	TempPath             string   `toml:"temp_path"`
 	Port                 int      `toml:"port"`
 	MaxRenderWorkers     int      `toml:"max_render_workers"`
 	FileBlacklist        []string `toml:"file_blacklist"`

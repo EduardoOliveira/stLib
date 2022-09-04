@@ -1,6 +1,5 @@
 port = 8000
 library_path = "./testdata"
-temp_path = "./temp"
 max_render_workers = 10
 file_blacklist = [".potato",".example"]
 model_render_color = "#167DF0"

@@ -8,13 +8,18 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path/filepath"
 	"regexp"
+	"strings"
 	"time"
 
 	"github.com/eduardooliveira/stLib/core/images"
 	"github.com/eduardooliveira/stLib/core/models"
+	"github.com/eduardooliveira/stLib/core/projectFiles"
 	"github.com/eduardooliveira/stLib/core/runtime"
 	"github.com/eduardooliveira/stLib/core/state"
+	"github.com/eduardooliveira/stLib/core/utils"
+	"golang.org/x/exp/slices"
 )
 
 func fetchThing(url string) error {
@@ -28,9 +33,10 @@ func fetchThing(url string) error {
 
 		httpClient := &http.Client{}
 
-		project := state.NewProject()
-		project.Path = fmt.Sprintf("%s/%s", runtime.Cfg.TempPath, id)
-		_ = os.Mkdir(project.Path, os.ModePerm)
+		tempPath := utils.ToLibPath(id)
+
+		project := state.NewProjectFromPath(tempPath)
+		_ = os.Mkdir(utils.ToLibPath(project.Path), os.ModePerm)
 
 		err := fetchDetails(id, project, httpClient)
 		if err != nil {
@@ -44,6 +50,15 @@ func fetchThing(url string) error {
 		if err != nil {
 			return err
 		}
+
+		err = utils.Move(utils.ToLibPath(project.Path), utils.ToLibPath(project.Name))
+		if err != nil {
+			return err
+		}
+		project.Path = project.Name
+
+		j, _ := json.Marshal(project)
+		fmt.Println(string(j))
 
 		state.Projects[project.UUID] = project
 
@@ -104,8 +119,8 @@ func fetchFiles(id string, project *state.Project, httpClient *http.Client) erro
 	req.Method = "GET"
 
 	for _, file := range files {
-		log.Println(file)
-		out, err := os.Create(fmt.Sprintf("%s/%s/%s", runtime.Cfg.TempPath, id, file.Name))
+
+		out, err := os.Create(utils.ToLibPath(fmt.Sprintf("%s/%s", project.Path, file.Name)))
 		if err != nil {
 			return err
 		}
@@ -129,10 +144,19 @@ func fetchFiles(id string, project *state.Project, httpClient *http.Client) erro
 			return err
 		}
 
-		_, err = models.HandleModel(project, file.Name)
-		if err != nil {
-			return err
+		ext := filepath.Ext(strings.ToLower(file.Name))
+		if slices.Contains(models.ModelExtensions, ext) {
+			_, err = models.HandleModel(project, file.Name)
+			if err != nil {
+				return err
+			}
+		} else {
+			_, err = projectFiles.HandleFile(project, file.Name)
+			if err != nil {
+				return err
+			}
 		}
+
 	}
 
 	log.Printf("Downloaded %d files\n", len(files))
@@ -162,10 +186,10 @@ func fetchImages(id string, project *state.Project, httpClient *http.Client) err
 	req.Method = "GET"
 
 	for _, image := range tImages {
-		log.Println(image)
+
 		for _, size := range image.Sizes {
 			if size.Size == "large" && size.Type == "display" {
-				out, err := os.Create(fmt.Sprintf("%s/%s/%s", runtime.Cfg.TempPath, id, image.Name))
+				out, err := os.Create(utils.ToLibPath(fmt.Sprintf("%s/%s", project.Path, image.Name)))
 				if err != nil {
 					return err
 				}

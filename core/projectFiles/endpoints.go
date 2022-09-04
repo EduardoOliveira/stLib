@@ -8,17 +8,24 @@ import (
 	"os"
 
 	"github.com/eduardooliveira/stLib/core/state"
+	"github.com/eduardooliveira/stLib/core/utils"
 	"github.com/labstack/echo/v4"
 )
 
 func get(c echo.Context) error {
-	s, ok := state.Files[c.Param("sha1")]
+	f, ok := state.Files[c.Param("sha1")]
 
 	if !ok {
 		return c.NoContent(http.StatusNotFound)
 	}
 
-	return c.Attachment(s.Path, s.Name)
+	project, ok := state.Projects[f.ProjectUUID]
+
+	if !ok {
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	return c.Attachment(utils.ToLibPath(fmt.Sprintf("%s/%s", project.Path, f.Path)), f.Name)
 }
 func upload(c echo.Context) error {
 	projectUUID := c.FormValue("project")

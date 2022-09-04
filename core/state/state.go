@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 
 	"github.com/BurntSushi/toml"
+	"github.com/eduardooliveira/stLib/core/runtime"
+	"github.com/eduardooliveira/stLib/core/utils"
 	"github.com/google/uuid"
 )
 
@@ -17,6 +19,7 @@ var Slices = make(map[string]*Slice)
 var Files = make(map[string]*ProjectFile)
 
 func NewProjectFromPath(path string) *Project {
+	path, _ = filepath.Rel(runtime.Cfg.LibraryPath, path)
 	project := NewProject()
 	project.Path = path
 	project.Name = filepath.Base(path)
@@ -37,7 +40,7 @@ func NewProject() *Project {
 }
 
 func PersistProject(project *Project) error {
-	f, err := os.OpenFile(fmt.Sprintf("%s/.project.stlib", project.Path), os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
+	f, err := os.OpenFile(fmt.Sprintf("%s/.project.stlib", utils.ToLibPath(project.Path)), os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
 		log.Println(err)
 	}

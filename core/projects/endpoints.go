@@ -7,11 +7,11 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path"
 
 	"github.com/eduardooliveira/stLib/core/discovery"
 	"github.com/eduardooliveira/stLib/core/runtime"
 	"github.com/eduardooliveira/stLib/core/state"
+	"github.com/eduardooliveira/stLib/core/utils"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/exp/maps"
@@ -71,6 +71,32 @@ func showFiles(c echo.Context) error {
 	return c.JSON(http.StatusOK, maps.Values(project.Files))
 }
 
+func initProject(c echo.Context) error {
+
+	if c.Param("uuid") == "" {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	uuid := c.Param("uuid")
+
+	project, ok := state.Projects[uuid]
+
+	if !ok {
+		return c.NoContent(http.StatusNotFound)
+	}
+
+	project.Initialized = true
+
+	err := state.PersistProject(project)
+
+	if err != nil {
+		log.Println(err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	return c.NoContent(http.StatusOK)
+}
+
 func save(c echo.Context) error {
 	pproject := &state.Project{}
 
@@ -89,23 +115,19 @@ func save(c echo.Context) error {
 		return c.NoContent(http.StatusNotFound)
 	}
 
+	if !project.Initialized {
+		return c.NoContent(http.StatusOK)
+	}
+
 	pproject.Models = project.Models
 	pproject.Images = project.Images
 	pproject.Slices = project.Slices
 	pproject.Initialized = true
 
 	if pproject.Path != project.Path {
-
-		if err := os.MkdirAll(path.Dir(pproject.Path), os.ModePerm); err != nil {
-			log.Println(err)
-			return c.NoContent(http.StatusInternalServerError)
-		}
-
-		if err := os.Rename(project.Path, pproject.Path); err != nil {
-			log.Println(err)
-			return c.NoContent(http.StatusInternalServerError)
-		}
-		discovery.DiscoverProjectAssets(pproject)
+		utils.Move(utils.ToLibPath(project.Path), pproject.Path)
+		project.Path = pproject.Path
+		//discovery.DiscoverProjectAssets(pproject)
 	}
 
 	state.Projects[pproject.UUID] = pproject

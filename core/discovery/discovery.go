@@ -16,6 +16,7 @@ import (
 	"github.com/eduardooliveira/stLib/core/runtime"
 	sl "github.com/eduardooliveira/stLib/core/slices"
 	"github.com/eduardooliveira/stLib/core/state"
+	"github.com/eduardooliveira/stLib/core/utils"
 	"golang.org/x/exp/slices"
 )
 
@@ -59,13 +60,14 @@ func walker(path string, d fs.DirEntry, err error) error {
 }
 
 func DiscoverProjectAssets(project *state.Project) error {
-	files, err := ioutil.ReadDir(project.Path)
+	libPath := utils.ToLibPath(project.Path)
+	files, err := ioutil.ReadDir(libPath)
 	if err != nil {
 		return err
 	}
 	fNames, err := getDirFileSlice(files)
 	if err != nil {
-		log.Printf("error reading the directory %q: %v\n", project.Path, err)
+		log.Printf("error reading the directory %q: %v\n", libPath, err)
 		return err
 	}
 
@@ -92,7 +94,6 @@ func DiscoverProjectAssets(project *state.Project) error {
 
 func pathToTags(path string) []string {
 	tags := strings.Split(path, "/")
-	tags = tags[:len(tags)-1]
 	if len(tags) > 1 {
 		tags = tags[1:]
 	} else {
@@ -103,7 +104,7 @@ func pathToTags(path string) []string {
 
 func initProject(project *state.Project) error {
 	project.Initialized = true
-	_, err := toml.DecodeFile(fmt.Sprintf("%s/.project.stlib", project.Path), &project)
+	_, err := toml.DecodeFile(utils.ToLibPath(fmt.Sprintf("%s/.project.stlib", project.Path)), &project)
 	if err != nil {
 		log.Printf("error decoding the project %q: %v\n", project.Path, err)
 		return err
