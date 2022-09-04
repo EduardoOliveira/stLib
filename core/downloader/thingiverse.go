@@ -24,7 +24,7 @@ func fetchThing(url string) error {
 
 	if len(matches) > 0 {
 		id := matches[1]
-		log.Println(id)
+		log.Println("Processing thing: ", id)
 
 		httpClient := &http.Client{}
 
@@ -76,6 +76,8 @@ func fetchDetails(id string, project *state.Project, httpClient *http.Client) er
 	for _, tag := range thing.Tags {
 		project.Tags = append(project.Tags, tag.Name)
 	}
+
+	log.Println("Downloading details for thing: ", thing.Name)
 
 	return nil
 }
@@ -132,6 +134,8 @@ func fetchFiles(id string, project *state.Project, httpClient *http.Client) erro
 			return err
 		}
 	}
+
+	log.Printf("Downloaded %d files\n", len(files))
 
 	return nil
 }
@@ -194,6 +198,9 @@ func fetchImages(id string, project *state.Project, httpClient *http.Client) err
 		}
 
 	}
+
+	log.Printf("Downloaded %d images\n", len(tImages))
+
 	return nil
 }
 

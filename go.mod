@@ -2,12 +2,12 @@ module github.com/eduardooliveira/stLib
 
 go 1.19
 
-require github.com/labstack/echo/v4 v4.8.0
-
 require (
-	github.com/BurntSushi/toml v1.2.0 // indirect
-	github.com/fogleman/simplify v0.0.0-20170216171241-d32f302d5046 // indirect
+	github.com/BurntSushi/toml v1.2.0
+	github.com/labstack/echo/v4 v4.8.0
 )
+
+require github.com/fogleman/simplify v0.0.0-20170216171241-d32f302d5046 // indirect
 
 require (
 	github.com/fogleman/fauxgl v0.0.0-20200818143847-27cddc103802

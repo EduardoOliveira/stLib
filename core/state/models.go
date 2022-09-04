@@ -30,7 +30,6 @@ type ProjectImage struct {
 	Name      string `json:"name" toml:"name" form:"name" query:"name"`
 	Path      string `json:"path" toml:"path" form:"path" query:"path"`
 	Extension string `json:"extension" toml:"extension" form:"extension" query:"extension"`
-	ModelSHA1 string `json:"model_sha1" toml:"model_sha1" form:"model_sha1" query:"model_sha1"`
 	MimeType  string `json:"mime_type" toml:"mime_type" form:"mime_type" query:"mime_type"`
 }
 
@@ -48,7 +47,6 @@ type Slice struct {
 	Name       string        `json:"name" toml:"name" form:"name" query:"name"`
 	Path       string        `json:"path" toml:"path" form:"path" query:"path"`
 	Extension  string        `json:"extension" toml:"extension" form:"extension" query:"extension"`
-	ModelsSHA1 []string      `json:"models_sha1" toml:"models_sha1" form:"models_sha1" query:"models_sha1"`
 	MimeType   string        `json:"mime_type" toml:"mime_type" form:"mime_type" query:"mime_type"`
 	Image      *ProjectImage `json:"image" toml:"image" form:"image" query:"image"`
 	Slicer     string        `json:"slicer" toml:"slicer" form:"slicer" query:"slicer"`

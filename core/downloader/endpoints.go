@@ -20,7 +20,6 @@ func fetch(c echo.Context) error {
 		log.Panicln(err)
 		return c.NoContent(http.StatusBadRequest)
 	}
-	payload.Url = "https://www.thingiverse.com/thing:1536561"
 
 	if payload.Url != "" {
 		payload.Urls = append(payload.Urls, strings.Split(payload.Url, ",")...)
@@ -28,7 +27,7 @@ func fetch(c echo.Context) error {
 
 	for _, url := range payload.Urls {
 		log.Println(url)
-		if strings.Contains(url, "thingiverse.com") {
+		if strings.Contains(url, "thingiverse.com") || strings.Contains(url, "thing:") {
 			err := fetchThing(url)
 			if err != nil {
 				log.Println(err)

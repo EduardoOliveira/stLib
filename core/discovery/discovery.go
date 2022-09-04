@@ -48,11 +48,11 @@ func walker(path string, d fs.DirEntry, err error) error {
 	}
 
 	if len(project.Models) > 0 {
-		err = state.PersistProject(project)
+		/*err = state.PersistProject(project)
 		if err != nil {
 			log.Printf("error persisting the project %q: %v\n", path, err)
 			return err
-		}
+		}*/
 		state.Projects[project.UUID] = project
 	}
 	return nil
