@@ -21,15 +21,20 @@ RUN pwd
 
 FROM debian:latest
 RUN mkdir -p app/frontend/dist
+RUN mkdir /config
+
 WORKDIR /app
 
 COPY --from=go /app/main ./
-COPY --from=go /app/helpers/config.toml ./
+COPY --from=go /app/helpers/config.toml /config
 COPY --from=n /app/frontend/dist ./frontend/dist
 RUN mkdir /library
 RUN mkdir /app/cache
-RUN ls -la
+RUN ls -la /config
 RUN pwd
 RUN chmod +x main
 RUN ls -la /app/main
+
+ENV STLIB_CONFIG=/config/config.toml
+
 ENTRYPOINT ["/app/main"]
