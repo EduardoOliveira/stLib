@@ -18,13 +18,16 @@ import (
 )
 
 func Run() {
-	f, err := os.OpenFile("stlib.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	if err != nil {
-		log.Fatalf("error opening file: %v", err)
+
+	if logPath := runtime.Cfg.LogPath; logPath != "" {
+		f, err := os.OpenFile("stlib.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+		if err != nil {
+			log.Fatalf("error opening file: %v", err)
+		}
+		defer f.Close()
+		wrt := io.MultiWriter(os.Stdout, f)
+		log.SetOutput(wrt)
 	}
-	defer f.Close()
-	wrt := io.MultiWriter(os.Stdout, f)
-	log.SetOutput(wrt)
 
 	discovery.Run(runtime.Cfg.LibraryPath)
 	fmt.Println("starting server...")
