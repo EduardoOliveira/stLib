@@ -15,6 +15,7 @@ type Config struct {
 	ModelRenderColor     string   `toml:"model_render_color"`
 	ModelBackgroundColor string   `toml:"model_background_color"`
 	ThingiverseToken     string   `toml:"thingiverse_token"`
+	LogPath              string   `toml:"log_path"`
 }
 
 var Cfg *Config
