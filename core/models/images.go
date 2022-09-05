@@ -7,6 +7,7 @@ import (
 
 	"github.com/eduardooliveira/stLib/core/runtime"
 	"github.com/eduardooliveira/stLib/core/state"
+	"github.com/eduardooliveira/stLib/core/utils"
 	"github.com/fogleman/fauxgl"
 	"github.com/nfnt/resize"
 )
@@ -70,8 +71,13 @@ func renderWorker(jobs <-chan *cacheJob) {
 
 func renderCache(cacheKey string, model *state.Model) error {
 
-	// load a mesh
-	mesh, err := fauxgl.LoadSTL(model.Path)
+	p, ok := state.Projects[model.ProjectUUID]
+
+	if !ok {
+		return fmt.Errorf("project not found")
+	}
+
+	mesh, err := fauxgl.LoadSTL(utils.ToLibPath(fmt.Sprintf("%s/%s", p.Path, model.Path)))
 	if err != nil {
 		log.Println(err)
 		return err

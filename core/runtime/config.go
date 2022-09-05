@@ -14,7 +14,7 @@ type Config struct {
 	FileBlacklist        []string `toml:"file_blacklist"`
 	ModelRenderColor     string   `toml:"model_render_color"`
 	ModelBackgroundColor string   `toml:"model_background_color"`
-	LogPath              string   `toml:"log_path"`
+	ThingiverseToken     string   `toml:"thingiverse_token"`
 }
 
 var Cfg *Config

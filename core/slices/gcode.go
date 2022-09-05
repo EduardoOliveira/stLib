@@ -15,6 +15,7 @@ import (
 	"strings"
 
 	"github.com/eduardooliveira/stLib/core/state"
+	"github.com/eduardooliveira/stLib/core/utils"
 )
 
 type tmpImg struct {
@@ -23,9 +24,9 @@ type tmpImg struct {
 	Data   []byte
 }
 
-func GcodeToSlice(s *state.Slice, path string) error {
+func GcodeToSlice(s *state.Slice, path string, project *state.Project) error {
 
-	f, err := os.Open(s.Path)
+	f, err := os.Open(utils.ToLibPath(fmt.Sprintf("%s/%s", project.Path, s.Path)))
 	if err != nil {
 		return err
 	}
@@ -83,11 +84,12 @@ func GcodeToSlice(s *state.Slice, path string) error {
 		}
 
 		s.Image = &state.ProjectImage{
-			SHA1:      fmt.Sprintf("%x", h.Sum(nil)),
-			Name:      imgName,
-			Path:      imgPath,
-			Extension: ".png",
-			MimeType:  "image/png",
+			SHA1:        fmt.Sprintf("%x", h.Sum(nil)),
+			Name:        imgName,
+			ProjectUUID: project.UUID,
+			Path:        imgPath,
+			Extension:   ".png",
+			MimeType:    "image/png",
 		}
 
 	}
@@ -196,7 +198,7 @@ func storeImage(img *tmpImg, name string) error {
 	if err != nil {
 		return err
 	}
-	out, _ := os.Create(name)
+	out, _ := os.Create(utils.ToLibPath(name))
 	defer out.Close()
 
 	err = png.Encode(out, i)

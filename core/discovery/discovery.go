@@ -16,6 +16,7 @@ import (
 	"github.com/eduardooliveira/stLib/core/runtime"
 	sl "github.com/eduardooliveira/stLib/core/slices"
 	"github.com/eduardooliveira/stLib/core/state"
+	"github.com/eduardooliveira/stLib/core/utils"
 	"golang.org/x/exp/slices"
 )
 
@@ -40,29 +41,33 @@ func walker(path string, d fs.DirEntry, err error) error {
 	}
 	log.Printf("walking the path %q\n", path)
 
-	project := state.NewProject(path)
+	project := state.NewProjectFromPath(path)
 
-	DiscoverProjectAssets(project)
+	err = DiscoverProjectAssets(project)
+	if err != nil {
+		return err
+	}
 
 	if len(project.Models) > 0 {
-		err = state.PersistProject(project)
+		/*err = state.PersistProject(project)
 		if err != nil {
 			log.Printf("error persisting the project %q: %v\n", path, err)
 			return err
-		}
+		}*/
 		state.Projects[project.UUID] = project
 	}
 	return nil
 }
 
 func DiscoverProjectAssets(project *state.Project) error {
-	files, err := ioutil.ReadDir(project.Path)
+	libPath := utils.ToLibPath(project.Path)
+	files, err := ioutil.ReadDir(libPath)
 	if err != nil {
 		return err
 	}
 	fNames, err := getDirFileSlice(files)
 	if err != nil {
-		log.Printf("error reading the directory %q: %v\n", project.Path, err)
+		log.Printf("error reading the directory %q: %v\n", libPath, err)
 		return err
 	}
 
@@ -89,7 +94,6 @@ func DiscoverProjectAssets(project *state.Project) error {
 
 func pathToTags(path string) []string {
 	tags := strings.Split(path, "/")
-	tags = tags[:len(tags)-1]
 	if len(tags) > 1 {
 		tags = tags[1:]
 	} else {
@@ -100,7 +104,7 @@ func pathToTags(path string) []string {
 
 func initProject(project *state.Project) error {
 	project.Initialized = true
-	_, err := toml.DecodeFile(fmt.Sprintf("%s/.project.stlib", project.Path), &project)
+	_, err := toml.DecodeFile(utils.ToLibPath(fmt.Sprintf("%s/.project.stlib", project.Path)), &project)
 	if err != nil {
 		log.Printf("error decoding the project %q: %v\n", project.Path, err)
 		return err
@@ -125,26 +129,26 @@ func initProjectAssets(project *state.Project, files []fs.FileInfo) error {
 			continue
 		}
 		if strings.HasSuffix(file.Name(), ".stl") || strings.HasSuffix(file.Name(), ".STL") {
-			err := models.HandleModel(project, file.Name())
+			_, err := models.HandleModel(project, file.Name())
 			if err != nil {
 				log.Printf("error loading the model %q: %v\n", file.Name(), err)
 				continue
 			}
 		} else if strings.HasSuffix(file.Name(), ".png") || strings.HasSuffix(file.Name(), ".jpg") {
 
-			err := images.HandleImage(project, file.Name())
+			_, err := images.HandleImage(project, file.Name())
 			if err != nil {
 				log.Printf("error loading the image %q: %v\n", file.Name(), err)
 				continue
 			}
 		} else if strings.HasSuffix(file.Name(), ".gcode") || strings.HasSuffix(file.Name(), ".GCODE") {
-			err := sl.HandleGcodeSlice(project, file.Name())
+			_, err := sl.HandleGcodeSlice(project, file.Name())
 			if err != nil {
 				log.Printf("error loading the gcode %q: %v\n", file.Name(), err)
 				continue
 			}
 		} else {
-			err := projectFiles.HandleFile(project, file.Name())
+			_, err := projectFiles.HandleFile(project, file.Name())
 			if err != nil {
 				log.Printf("error loading the generic file %q: %v\n", file.Name(), err)
 				continue

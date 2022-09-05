@@ -4,3 +4,4 @@ max_render_workers = 5
 file_blacklist = [".potato",".example"]
 model_render_color = "#167DF0"
 model_background_color =  "#FFFFFF"
+thingiverse_token = "" #your_thingiverse_token
