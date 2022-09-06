@@ -790,3 +790,90 @@
 2022/09/04 10:30:03 <nil>
 2022/09/04 10:30:03 rendered cache/c240f46ca3f38c6c8d61b6f4247898577231af18.png
 2022/09/04 10:30:03 terminated cache/c240f46ca3f38c6c8d61b6f4247898577231af18.png
+2022/09/05 15:41:55 Starting 5 render workers
+2022/09/05 15:45:26 ./testdata
+2022/09/05 15:45:26 walking the path "./testdata"
+2022/09/05 15:45:26 found generic file .gitkeep
+2022/09/05 15:45:26 testdata/.gitkeep
+2022/09/05 15:45:26 testdata/benchy
+2022/09/05 15:45:26 walking the path "testdata/benchy"
+2022/09/05 15:45:26 found project benchy
+2022/09/05 15:45:26 found generic file .project.stlib
+2022/09/05 15:45:26 found stls 3DBenchy.stl
+2022/09/05 15:45:26 found gcode 3DBenchy_0.2mm_PET_45m.gcode
+2022/09/05 15:45:26 found image 3DBenchy_0.2mm_PET_45m.thumb.png
+2022/09/05 15:45:26 found gcode 3DBenchy_0.2mm_PLA_59m.gcode
+2022/09/05 15:45:26 found image 3DBenchy_0.2mm_PLA_59m.thumb.png
+2022/09/05 15:45:26 found generic file 3DBenchy_Broschure_3DBenchy.com_.pdf
+2022/09/05 15:45:26 found image IMG_20200731_210313.jpg
+2022/09/05 15:45:26 found image IMG_20220619_091631.jpg
+2022/09/05 15:45:26 testdata/benchy/.project.stlib
+2022/09/05 15:45:26 testdata/benchy/3DBenchy.stl
+2022/09/05 15:45:26 testdata/benchy/3DBenchy_0.2mm_PET_45m.gcode
+2022/09/05 15:45:26 testdata/benchy/3DBenchy_0.2mm_PET_45m.thumb.png
+2022/09/05 15:45:26 testdata/benchy/3DBenchy_0.2mm_PLA_59m.gcode
+2022/09/05 15:45:26 testdata/benchy/3DBenchy_0.2mm_PLA_59m.thumb.png
+2022/09/05 15:45:26 testdata/benchy/3DBenchy_Broschure_3DBenchy.com_.pdf
+2022/09/05 15:45:26 testdata/benchy/IMG_20200731_210313.jpg
+2022/09/05 15:45:26 testdata/benchy/IMG_20220619_091631.jpg
+2022/09/05 15:45:26 testdata/drill
+2022/09/05 15:45:26 walking the path "testdata/drill"
+2022/09/05 15:45:26 found project drill
+2022/09/05 15:45:26 found generic file .project.stlib
+2022/09/05 15:45:26 found stls Drill_Wall_Mount_001.stl
+2022/09/05 15:45:26 testdata/drill/.project.stlib
+2022/09/05 15:45:26 testdata/drill/Drill_Wall_Mount_001.stl
+2022/09/05 15:45:26 testdata/lich
+2022/09/05 15:45:26 walking the path "testdata/lich"
+2022/09/05 15:45:26 found project lich
+2022/09/05 15:45:26 found generic file .project.stlib
+2022/09/05 15:45:26 found stls lich-01-54mm.stl
+2022/09/05 15:45:26 found stls lich-base-54mm.stl
+2022/09/05 15:45:26 testdata/lich/.project.stlib
+2022/09/05 15:45:26 testdata/lich/lich-01-54mm.stl
+2022/09/05 15:45:26 testdata/lich/lich-base-54mm.stl
+2022/09/05 15:45:26 {"3925e38f-7b29-4690-bd50-866302eb95fc":{"uuid":"3925e38f-7b29-4690-bd50-866302eb95fc","name":"lich","description":"","path":"lich","external_link":"","tags":[],"default_image_path":"/models/render/add4d5501bd84372397b5ce1f9e6bedf5964e787","initialized":true},"9300ff9a-2335-4f0f-9702-45710032460e":{"uuid":"9300ff9a-2335-4f0f-9702-45710032460e","name":"benchy","description":"","path":"benchy","external_link":"","tags":[],"default_image_path":"/images/fe36d9088ec8b7afe7c57c6511bcb414ee9b434c","initialized":true},"a983a021-6ac1-478a-9ba7-b37cf4e9d0f6":{"uuid":"a983a021-6ac1-478a-9ba7-b37cf4e9d0f6","name":"drill","description":"","path":"drill","external_link":"","tags":[],"default_image_path":"/models/render/ab3e01c36ca4d5c89af85841ff9f53c9bbe747f8","initialized":true}}
+2022/09/05 15:45:26 Starting 10 render workers
+2022/09/05 15:46:26 ./testdata
+2022/09/05 15:46:26 walking the path "./testdata"
+2022/09/05 15:46:26 found generic file .gitkeep
+2022/09/05 15:46:26 testdata/.gitkeep
+2022/09/05 15:46:26 testdata/benchy
+2022/09/05 15:46:26 walking the path "testdata/benchy"
+2022/09/05 15:46:26 found project benchy
+2022/09/05 15:46:26 found generic file .project.stlib
+2022/09/05 15:46:26 found stls 3DBenchy.stl
+2022/09/05 15:46:27 found gcode 3DBenchy_0.2mm_PET_45m.gcode
+2022/09/05 15:46:27 found image 3DBenchy_0.2mm_PET_45m.thumb.png
+2022/09/05 15:46:27 found gcode 3DBenchy_0.2mm_PLA_59m.gcode
+2022/09/05 15:46:27 found image 3DBenchy_0.2mm_PLA_59m.thumb.png
+2022/09/05 15:46:27 found generic file 3DBenchy_Broschure_3DBenchy.com_.pdf
+2022/09/05 15:46:27 found image IMG_20200731_210313.jpg
+2022/09/05 15:46:27 found image IMG_20220619_091631.jpg
+2022/09/05 15:46:27 testdata/benchy/.project.stlib
+2022/09/05 15:46:27 testdata/benchy/3DBenchy.stl
+2022/09/05 15:46:27 testdata/benchy/3DBenchy_0.2mm_PET_45m.gcode
+2022/09/05 15:46:27 testdata/benchy/3DBenchy_0.2mm_PET_45m.thumb.png
+2022/09/05 15:46:27 testdata/benchy/3DBenchy_0.2mm_PLA_59m.gcode
+2022/09/05 15:46:27 testdata/benchy/3DBenchy_0.2mm_PLA_59m.thumb.png
+2022/09/05 15:46:27 testdata/benchy/3DBenchy_Broschure_3DBenchy.com_.pdf
+2022/09/05 15:46:27 testdata/benchy/IMG_20200731_210313.jpg
+2022/09/05 15:46:27 testdata/benchy/IMG_20220619_091631.jpg
+2022/09/05 15:46:27 testdata/drill
+2022/09/05 15:46:27 walking the path "testdata/drill"
+2022/09/05 15:46:27 found project drill
+2022/09/05 15:46:27 found generic file .project.stlib
+2022/09/05 15:46:27 found stls Drill_Wall_Mount_001.stl
+2022/09/05 15:46:27 testdata/drill/.project.stlib
+2022/09/05 15:46:27 testdata/drill/Drill_Wall_Mount_001.stl
+2022/09/05 15:46:27 testdata/lich
+2022/09/05 15:46:27 walking the path "testdata/lich"
+2022/09/05 15:46:27 found project lich
+2022/09/05 15:46:27 found generic file .project.stlib
+2022/09/05 15:46:27 found stls lich-01-54mm.stl
+2022/09/05 15:46:27 found stls lich-base-54mm.stl
+2022/09/05 15:46:27 testdata/lich/.project.stlib
+2022/09/05 15:46:27 testdata/lich/lich-01-54mm.stl
+2022/09/05 15:46:27 testdata/lich/lich-base-54mm.stl
+2022/09/05 15:46:27 {"3925e38f-7b29-4690-bd50-866302eb95fc":{"uuid":"3925e38f-7b29-4690-bd50-866302eb95fc","name":"lich","description":"","path":"lich","external_link":"","tags":[],"default_image_path":"/models/render/add4d5501bd84372397b5ce1f9e6bedf5964e787","initialized":true},"9300ff9a-2335-4f0f-9702-45710032460e":{"uuid":"9300ff9a-2335-4f0f-9702-45710032460e","name":"benchy","description":"","path":"benchy","external_link":"","tags":[],"default_image_path":"/images/fe36d9088ec8b7afe7c57c6511bcb414ee9b434c","initialized":true},"a983a021-6ac1-478a-9ba7-b37cf4e9d0f6":{"uuid":"a983a021-6ac1-478a-9ba7-b37cf4e9d0f6","name":"drill","description":"","path":"drill","external_link":"","tags":[],"default_image_path":"/models/render/ab3e01c36ca4d5c89af85841ff9f53c9bbe747f8","initialized":true}}
+2022/09/05 15:46:27 Starting 10 render workers
