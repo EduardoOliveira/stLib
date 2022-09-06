@@ -44,7 +44,8 @@ library_path = "/library" # path to the stl library
 max_render_workers = 5 # max number of workers to render the 3d model images in parallel shouldn't exceed the number of cpu cores
 file_blacklist = [".potato",".example"] # list of files to ignore when searching for stl and assets files in the library_path
 model_render_color = "#167DF0" # color to render the 3d model
-model_background_color =  "#FFFFFF" # color to render the 3d model background
+model_background_color =  "#FFFFFF"  # color to render the 3d model background
+thingiverse_token = "your_thingiverse_token" # thingiverse token to allow the import of thingiverse projects
 
 ```
 
@@ -59,11 +60,19 @@ services:
     container_name: stlib
     volumes:
       - ./library:/library
-      - ./config.toml:/app/config.toml #if you want to change the config
+      - ./config.toml:/app/config.toml
     ports:
       - 8000:8000
+    environment:
+      - "THINGIVERSE_TOKEN": "" # needed for the thingiverse download feature
+      #- "PORT": 8000
+      #- "LIBRARY_PATH": "./library"
+      #- "MAX_RENDER_WORKERS": 5
+      #- "MODEL_RENDER_COLOR": "#ffffff"
+      #- "MODEL_BACKGROUND_COLOR": "#000000"
+      #- "LOG_PATH": "./log" # If you wish to log to a file
+    
     restart: unless-stopped
-
 ```
 
 ## Discussion

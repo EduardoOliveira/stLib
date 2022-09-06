@@ -2,9 +2,8 @@ package runtime
 
 import (
 	"log"
-	"os"
 
-	"github.com/BurntSushi/toml"
+	"github.com/spf13/viper"
 )
 
 type Config struct {
@@ -22,27 +21,34 @@ var Cfg *Config
 
 func init() {
 
-	configFile := "config.toml"
+	viper.SetDefault("port", 8000)
+	viper.SetDefault("library_path", "./library")
+	viper.SetDefault("max_render_workers", 5)
+	viper.SetDefault("file_blacklist", []string{})
+	viper.SetDefault("model_render_color", "#ffffff")
+	viper.SetDefault("model_background_color", "#000000")
+	viper.SetDefault("thingiverse_token", "")
+	viper.SetDefault("log_path", "./log")
 
-	if overrideFile := os.Getenv("STLIB_CONFIG"); overrideFile != "" {
-		configFile = overrideFile
-	}
+	viper.SetConfigName("config")
+	viper.AddConfigPath(".")
+	viper.AddConfigPath("/config")
+	viper.SetConfigType("toml")
+	viper.AutomaticEnv()
 
-	_, err := toml.DecodeFile(configFile, &Cfg)
+	err := viper.ReadInConfig()
 	if err != nil {
-		log.Fatal("Unable to read config file: ", err)
+		log.Println("error config file: %w", err)
 	}
 
-	Cfg.FileBlacklist = append(Cfg.FileBlacklist, ".gitignore", ".gitkeep", ".DS_Store", ".project.stlib", ".thumb.png")
-
-	if Cfg.MaxRenderWorkers == 0 {
-		Cfg.MaxRenderWorkers = 5
+	Cfg = &Config{
+		LibraryPath:          viper.GetString("library_path"),
+		Port:                 viper.GetInt("port"),
+		MaxRenderWorkers:     viper.GetInt("max_render_workers"),
+		FileBlacklist:        append(viper.GetStringSlice("file_blacklist"), ".gitignore", ".gitkeep", ".DS_Store", ".project.stlib", ".thumb.png"),
+		ModelRenderColor:     viper.GetString("model_render_color"),
+		ModelBackgroundColor: viper.GetString("model_background_color"),
+		ThingiverseToken:     viper.GetString("thingiverse_token"),
+		LogPath:              viper.GetString("log_path"),
 	}
-	if Cfg.ModelRenderColor == "" {
-		Cfg.ModelRenderColor = "#FFFFFF"
-	}
-	if Cfg.ModelRenderColor == "" {
-		Cfg.ModelRenderColor = "#FFFFFF"
-	}
-
 }

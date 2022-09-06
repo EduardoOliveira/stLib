@@ -35,7 +35,5 @@ RUN pwd
 RUN chmod +x main
 RUN ls -la /app/main
 
-ENV STLIB_CONFIG=/config/config.toml
-
 VOLUME [ "/config", "/library" ]
 ENTRYPOINT ["/app/main"]
