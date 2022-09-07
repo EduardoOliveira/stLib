@@ -4,7 +4,7 @@ description = ""
 path = "drill"
 external_link = ""
 tags = []
-default_image_path = "/models/render/ab3e01c36ca4d5c89af85841ff9f53c9bbe747f8"
+default_image_path = "ab3e01c36ca4d5c89af85841ff9f53c9bbe747f8"
 initialized = true
 
 [models]

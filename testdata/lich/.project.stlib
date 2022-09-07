@@ -4,7 +4,7 @@ description = ""
 path = "lich"
 external_link = ""
 tags = []
-default_image_path = "/models/render/add4d5501bd84372397b5ce1f9e6bedf5964e787"
+default_image_path = "add4d5501bd84372397b5ce1f9e6bedf5964e787"
 initialized = true
 
 [models]

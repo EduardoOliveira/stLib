@@ -9,6 +9,7 @@ import (
 	"os"
 
 	"github.com/eduardooliveira/stLib/core/discovery"
+	"github.com/eduardooliveira/stLib/core/models"
 	"github.com/eduardooliveira/stLib/core/runtime"
 	"github.com/eduardooliveira/stLib/core/state"
 	"github.com/eduardooliveira/stLib/core/utils"
@@ -18,7 +19,7 @@ import (
 )
 
 func index(c echo.Context) error {
-	return c.JSON(http.StatusOK, maps.Values(state.Projects))
+	return c.JSON(http.StatusOK, state.Projects)
 }
 
 func show(c echo.Context) error {
@@ -29,6 +30,38 @@ func show(c echo.Context) error {
 		return c.NoContent(http.StatusNotFound)
 	}
 	return c.JSON(http.StatusOK, project)
+}
+
+func showAssets(c echo.Context) error {
+	uuid := c.Param("uuid")
+	project, ok := state.Projects[uuid]
+
+	if !ok {
+		return c.NoContent(http.StatusNotFound)
+	}
+	return c.JSON(http.StatusOK, project.Assets)
+}
+
+func getAsset(c echo.Context) error {
+	uuid := c.Param("uuid")
+	project, ok := state.Projects[uuid]
+
+	if !ok {
+		return c.NoContent(http.StatusNotFound)
+	}
+
+	asset, ok := project.Assets[c.Param("sha1")]
+
+	if !ok {
+		return c.NoContent(http.StatusNotFound)
+	}
+
+	if c.QueryParam("download") != "" {
+		return c.Attachment(utils.ToLibPath(fmt.Sprintf("%s/%s", project.Path, asset.Name)), asset.Name)
+
+	}
+
+	return c.Inline(utils.ToLibPath(fmt.Sprintf("%s/%s", project.Path, asset.Name)), asset.Name)
 }
 
 func showModels(c echo.Context) error {
@@ -98,7 +131,7 @@ func initProject(c echo.Context) error {
 }
 
 func save(c echo.Context) error {
-	pproject := &state.Project{}
+	pproject := &models.Project{}
 
 	if err := c.Bind(pproject); err != nil {
 		log.Println(err)
@@ -190,7 +223,7 @@ func new(c echo.Context) error {
 		}
 
 	}
-	project := state.NewProjectFromPath(path)
+	project := models.NewProjectFromPath(path)
 
 	err = discovery.DiscoverProjectAssets(project)
 	if err != nil {

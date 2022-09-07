@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/eduardooliveira/stLib/core/models"
 	"github.com/eduardooliveira/stLib/core/state"
 	"github.com/eduardooliveira/stLib/core/utils"
 	"github.com/labstack/echo/v4"
@@ -59,11 +60,14 @@ func upload(c echo.Context) error {
 		return err
 	}
 
-	_, err = HandleFile(project, file.Filename)
+	asset, err := models.NewProjectAsset(file.Filename, project, dst)
+
 	if err != nil {
-		log.Println("Error handling the model: ", err)
-		return err
+		log.Println("Error creating the asset: ", err)
+		return c.NoContent(http.StatusInternalServerError)
 	}
+
+	project.Files[asset.SHA1] = asset
 
 	err = state.PersistProject(project)
 	if err != nil {

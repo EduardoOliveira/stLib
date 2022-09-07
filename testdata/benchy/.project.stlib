@@ -4,7 +4,7 @@ description = ""
 path = "benchy"
 external_link = ""
 tags = []
-default_image_path = "/images/fe36d9088ec8b7afe7c57c6511bcb414ee9b434c"
+default_image_path = "fe36d9088ec8b7afe7c57c6511bcb414ee9b434c"
 initialized = true
 
 [models]

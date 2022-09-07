@@ -15,6 +15,8 @@ func Register(e *echo.Group) {
 	group.GET("/:uuid/images", showImages)
 	group.GET("/:uuid/slices", showSlices)
 	group.GET("/:uuid/files", showFiles)
+	group.GET("/:uuid/assets", showAssets)
+	group.GET("/:uuid/assets/:sha1", getAsset)
 	group.POST("/:uuid/init", initProject)
 	group.POST("/:uuid", save)
 	group.POST("", new)

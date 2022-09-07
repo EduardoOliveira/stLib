@@ -13,9 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/eduardooliveira/stLib/core/images"
 	"github.com/eduardooliveira/stLib/core/models"
-	"github.com/eduardooliveira/stLib/core/projectFiles"
 	"github.com/eduardooliveira/stLib/core/runtime"
 	"github.com/eduardooliveira/stLib/core/state"
 	"github.com/eduardooliveira/stLib/core/utils"
@@ -35,7 +33,7 @@ func fetchThing(url string) error {
 
 		tempPath := utils.ToLibPath(id)
 
-		project := state.NewProjectFromPath(tempPath)
+		project := models.NewProjectFromPath(tempPath)
 		_ = os.Mkdir(utils.ToLibPath(project.Path), os.ModePerm)
 
 		err := fetchDetails(id, project, httpClient)
@@ -66,7 +64,7 @@ func fetchThing(url string) error {
 	return nil
 }
 
-func fetchDetails(id string, project *state.Project, httpClient *http.Client) error {
+func fetchDetails(id string, project *models.Project, httpClient *http.Client) error {
 	req := &http.Request{
 		Method: "GET",
 		URL:    &url.URL{Scheme: "https", Host: "api.thingiverse.com", Path: "/things/" + id},
@@ -97,7 +95,7 @@ func fetchDetails(id string, project *state.Project, httpClient *http.Client) er
 	return nil
 }
 
-func fetchFiles(id string, project *state.Project, httpClient *http.Client) error {
+func fetchFiles(id string, project *models.Project, httpClient *http.Client) error {
 	req := &http.Request{
 		Method: "GET",
 		URL:    &url.URL{Scheme: "https", Host: "api.thingiverse.com", Path: "/things/" + id + "/files"},
@@ -144,17 +142,16 @@ func fetchFiles(id string, project *state.Project, httpClient *http.Client) erro
 			return err
 		}
 
+		asset, err := models.NewProjectAsset(file.Name, project, out)
+		if err != nil {
+			return err
+		}
+
 		ext := filepath.Ext(strings.ToLower(file.Name))
 		if slices.Contains(models.ModelExtensions, ext) {
-			_, err = models.HandleModel(project, file.Name)
-			if err != nil {
-				return err
-			}
+			project.Models[asset.SHA1] = asset
 		} else {
-			_, err = projectFiles.HandleFile(project, file.Name)
-			if err != nil {
-				return err
-			}
+			project.Files[asset.SHA1] = asset
 		}
 
 	}
@@ -164,7 +161,7 @@ func fetchFiles(id string, project *state.Project, httpClient *http.Client) erro
 	return nil
 }
 
-func fetchImages(id string, project *state.Project, httpClient *http.Client) error {
+func fetchImages(id string, project *models.Project, httpClient *http.Client) error {
 	req := &http.Request{
 		Method: "GET",
 		URL:    &url.URL{Scheme: "https", Host: "api.thingiverse.com", Path: "/things/" + id + "/images"},
@@ -213,11 +210,12 @@ func fetchImages(id string, project *state.Project, httpClient *http.Client) err
 					return err
 				}
 
-				i, err := images.HandleImage(project, image.Name)
+				asset, err := models.NewProjectAsset(image.Name, project, out)
 				if err != nil {
 					return err
 				}
-				project.DefaultImagePath = fmt.Sprintf("/images/%s", i.SHA1)
+				project.Images[asset.SHA1] = asset
+				project.DefaultImagePath = asset.SHA1
 			}
 		}
 

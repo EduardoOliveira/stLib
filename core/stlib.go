@@ -8,12 +8,12 @@ import (
 
 	"github.com/eduardooliveira/stLib/core/discovery"
 	"github.com/eduardooliveira/stLib/core/downloader"
-	"github.com/eduardooliveira/stLib/core/images"
-	"github.com/eduardooliveira/stLib/core/models"
 	"github.com/eduardooliveira/stLib/core/projectFiles"
+	"github.com/eduardooliveira/stLib/core/projectImages"
+	"github.com/eduardooliveira/stLib/core/projectModels"
+	"github.com/eduardooliveira/stLib/core/projectSlices"
 	"github.com/eduardooliveira/stLib/core/projects"
 	"github.com/eduardooliveira/stLib/core/runtime"
-	"github.com/eduardooliveira/stLib/core/slices"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -46,10 +46,10 @@ func Run() {
 
 	api := e.Group("/api")
 
-	slices.Register(api.Group("/slices"))
-	images.Register(api.Group("/images"))
+	projectSlices.Register(api.Group("/slices"))
+	projectImages.Register(api.Group("/images"))
 	projectFiles.Register(api.Group("/files"))
-	models.Register(api.Group("/models"))
+	projectModels.Register(api.Group("/models"))
 	projects.Register(api.Group("/projects"))
 	downloader.Register(api.Group("/downloader"))
 
