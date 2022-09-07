@@ -1,9 +1,6 @@
 package projectModels
 
 import (
-	"log"
-
-	"github.com/eduardooliveira/stLib/core/runtime"
 	"github.com/labstack/echo/v4"
 )
 
@@ -16,7 +13,4 @@ func Register(e *echo.Group) {
 	group.GET("/get/:sha1", get)
 	group.POST("", upload)
 
-	log.Println("Starting", runtime.Cfg.MaxRenderWorkers, "render workers")
-	cacheJobs = make(chan *cacheJob, runtime.Cfg.MaxRenderWorkers)
-	go renderWorker(cacheJobs)
 }

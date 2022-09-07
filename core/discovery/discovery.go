@@ -143,6 +143,7 @@ func initProjectAssets(project *models.Project, files []fs.FileInfo) error {
 			project.Slices[asset.SHA1] = asset
 			if asset.Slice.Image != nil {
 				project.Images[asset.Slice.Image.SHA1] = asset.Slice.Image
+				project.Assets[asset.Slice.Image.SHA1] = asset.Slice.Image
 			}
 		}
 		project.Assets[asset.SHA1] = asset
