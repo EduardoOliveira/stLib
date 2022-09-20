@@ -9,16 +9,16 @@ import (
 	"os"
 
 	"github.com/eduardooliveira/stLib/core/discovery"
+	"github.com/eduardooliveira/stLib/core/models"
 	"github.com/eduardooliveira/stLib/core/runtime"
 	"github.com/eduardooliveira/stLib/core/state"
 	"github.com/eduardooliveira/stLib/core/utils"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
-	"golang.org/x/exp/maps"
 )
 
 func index(c echo.Context) error {
-	return c.JSON(http.StatusOK, maps.Values(state.Projects))
+	return c.JSON(http.StatusOK, state.Projects)
 }
 
 func show(c echo.Context) error {
@@ -31,44 +31,36 @@ func show(c echo.Context) error {
 	return c.JSON(http.StatusOK, project)
 }
 
-func showModels(c echo.Context) error {
+func showAssets(c echo.Context) error {
 	uuid := c.Param("uuid")
 	project, ok := state.Projects[uuid]
 
 	if !ok {
 		return c.NoContent(http.StatusNotFound)
 	}
-	return c.JSON(http.StatusOK, maps.Values(project.Models))
+	return c.JSON(http.StatusOK, project.Assets)
 }
 
-func showImages(c echo.Context) error {
+func getAsset(c echo.Context) error {
 	uuid := c.Param("uuid")
 	project, ok := state.Projects[uuid]
 
 	if !ok {
 		return c.NoContent(http.StatusNotFound)
 	}
-	return c.JSON(http.StatusOK, maps.Values(project.Images))
-}
 
-func showSlices(c echo.Context) error {
-	uuid := c.Param("uuid")
-	project, ok := state.Projects[uuid]
+	asset, ok := project.Assets[c.Param("sha1")]
 
 	if !ok {
 		return c.NoContent(http.StatusNotFound)
 	}
-	return c.JSON(http.StatusOK, maps.Values(project.Slices))
-}
 
-func showFiles(c echo.Context) error {
-	uuid := c.Param("uuid")
-	project, ok := state.Projects[uuid]
+	if c.QueryParam("download") != "" {
+		return c.Attachment(utils.ToLibPath(fmt.Sprintf("%s/%s", project.Path, asset.Name)), asset.Name)
 
-	if !ok {
-		return c.NoContent(http.StatusNotFound)
 	}
-	return c.JSON(http.StatusOK, maps.Values(project.Files))
+
+	return c.Inline(utils.ToLibPath(fmt.Sprintf("%s/%s", project.Path, asset.Name)), asset.Name)
 }
 
 func initProject(c echo.Context) error {
@@ -98,7 +90,7 @@ func initProject(c echo.Context) error {
 }
 
 func save(c echo.Context) error {
-	pproject := &state.Project{}
+	pproject := &models.Project{}
 
 	if err := c.Bind(pproject); err != nil {
 		log.Println(err)
@@ -119,15 +111,12 @@ func save(c echo.Context) error {
 		return c.NoContent(http.StatusOK)
 	}
 
-	pproject.Models = project.Models
-	pproject.Images = project.Images
-	pproject.Slices = project.Slices
+	pproject.Assets = project.Assets
 	pproject.Initialized = true
 
 	if pproject.Path != project.Path {
 		utils.Move(utils.ToLibPath(project.Path), pproject.Path)
 		project.Path = pproject.Path
-		//discovery.DiscoverProjectAssets(pproject)
 	}
 
 	state.Projects[pproject.UUID] = pproject
@@ -190,7 +179,7 @@ func new(c echo.Context) error {
 		}
 
 	}
-	project := state.NewProjectFromPath(path)
+	project := models.NewProjectFromPath(path)
 
 	err = discovery.DiscoverProjectAssets(project)
 	if err != nil {
@@ -200,7 +189,7 @@ func new(c echo.Context) error {
 
 	j, _ := json.Marshal(project)
 	log.Println(string(j))
-	m, _ := json.Marshal(project.Models)
+	m, _ := json.Marshal(project.Assets)
 	log.Println(string(m))
 
 	state.Projects[project.UUID] = project

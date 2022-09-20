@@ -45,7 +45,7 @@ func init() {
 		LibraryPath:          viper.GetString("library_path"),
 		Port:                 viper.GetInt("port"),
 		MaxRenderWorkers:     viper.GetInt("max_render_workers"),
-		FileBlacklist:        append(viper.GetStringSlice("file_blacklist"), ".gitignore", ".gitkeep", ".DS_Store", ".project.stlib", ".thumb.png"),
+		FileBlacklist:        append(viper.GetStringSlice("file_blacklist"), ".gitignore", ".gitkeep", ".DS_Store", ".project.stlib", ".thumb.png", ".gitkeep"),
 		ModelRenderColor:     viper.GetString("model_render_color"),
 		ModelBackgroundColor: viper.GetString("model_background_color"),
 		ThingiverseToken:     viper.GetString("thingiverse_token"),

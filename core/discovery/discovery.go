@@ -6,15 +6,13 @@ import (
 	"io/fs"
 	"io/ioutil"
 	"log"
+	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/BurntSushi/toml"
-	"github.com/eduardooliveira/stLib/core/images"
 	"github.com/eduardooliveira/stLib/core/models"
-	"github.com/eduardooliveira/stLib/core/projectFiles"
 	"github.com/eduardooliveira/stLib/core/runtime"
-	sl "github.com/eduardooliveira/stLib/core/slices"
 	"github.com/eduardooliveira/stLib/core/state"
 	"github.com/eduardooliveira/stLib/core/utils"
 	"golang.org/x/exp/slices"
@@ -41,25 +39,20 @@ func walker(path string, d fs.DirEntry, err error) error {
 	}
 	log.Printf("walking the path %q\n", path)
 
-	project := state.NewProjectFromPath(path)
+	project := models.NewProjectFromPath(path)
 
 	err = DiscoverProjectAssets(project)
 	if err != nil {
 		return err
 	}
 
-	if len(project.Models) > 0 {
-		/*err = state.PersistProject(project)
-		if err != nil {
-			log.Printf("error persisting the project %q: %v\n", path, err)
-			return err
-		}*/
+	if len(project.Assets) > 0 {
 		state.Projects[project.UUID] = project
 	}
 	return nil
 }
 
-func DiscoverProjectAssets(project *state.Project) error {
+func DiscoverProjectAssets(project *models.Project) error {
 	libPath := utils.ToLibPath(project.Path)
 	files, err := ioutil.ReadDir(libPath)
 	if err != nil {
@@ -89,21 +82,31 @@ func DiscoverProjectAssets(project *state.Project) error {
 		return err
 	}
 
+	if project.DefaultImagePath == "" {
+		for _, asset := range project.Assets {
+			if asset.AssetType == models.ProjectImageType {
+				project.DefaultImagePath = asset.SHA1
+				break
+			}
+		}
+	}
+
 	return nil
 }
 
 func pathToTags(path string) []string {
+	log.Println("pathToTags", path)
 	tags := strings.Split(path, "/")
 	if len(tags) > 1 {
 		tags = tags[1:]
 	} else {
 		tags = make([]string, 0)
 	}
+	log.Println("pathToTags", tags)
 	return tags
 }
 
-func initProject(project *state.Project) error {
-	project.Initialized = true
+func initProject(project *models.Project) error {
 	_, err := toml.DecodeFile(utils.ToLibPath(fmt.Sprintf("%s/.project.stlib", project.Path)), &project)
 	if err != nil {
 		log.Printf("error decoding the project %q: %v\n", project.Path, err)
@@ -113,7 +116,7 @@ func initProject(project *state.Project) error {
 	return nil
 }
 
-func initProjectAssets(project *state.Project, files []fs.FileInfo) error {
+func initProjectAssets(project *models.Project, files []fs.FileInfo) error {
 	for _, file := range files {
 		if file.IsDir() {
 			continue
@@ -128,32 +131,25 @@ func initProjectAssets(project *state.Project, files []fs.FileInfo) error {
 		if blacklisted {
 			continue
 		}
-		if strings.HasSuffix(file.Name(), ".stl") || strings.HasSuffix(file.Name(), ".STL") {
-			_, err := models.HandleModel(project, file.Name())
-			if err != nil {
-				log.Printf("error loading the model %q: %v\n", file.Name(), err)
-				continue
-			}
-		} else if strings.HasSuffix(file.Name(), ".png") || strings.HasSuffix(file.Name(), ".jpg") {
+		f, err := os.Open(utils.ToLibPath(fmt.Sprintf("%s/%s", project.Path, file.Name())))
+		if err != nil {
+			return err
+		}
+		defer f.Close()
+		asset, err := models.NewProjectAsset(file.Name(), project, f)
 
-			_, err := images.HandleImage(project, file.Name())
-			if err != nil {
-				log.Printf("error loading the image %q: %v\n", file.Name(), err)
-				continue
-			}
-		} else if strings.HasSuffix(file.Name(), ".gcode") || strings.HasSuffix(file.Name(), ".GCODE") {
-			_, err := sl.HandleGcodeSlice(project, file.Name())
-			if err != nil {
-				log.Printf("error loading the gcode %q: %v\n", file.Name(), err)
-				continue
-			}
-		} else {
-			_, err := projectFiles.HandleFile(project, file.Name())
-			if err != nil {
-				log.Printf("error loading the generic file %q: %v\n", file.Name(), err)
-				continue
+		if err != nil {
+			return err
+		}
+
+		if asset.AssetType == models.ProjectSliceType {
+			if asset.Slice.Image != nil {
+				project.Assets[asset.Slice.Image.SHA1] = asset.Slice.Image
 			}
 		}
+
+		project.Assets[asset.SHA1] = asset
+		state.Assets[asset.SHA1] = asset
 
 	}
 
