@@ -6,6 +6,7 @@ import (
 	"mime"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/eduardooliveira/stLib/core/utils"
 	"golang.org/x/exp/slices"
@@ -37,13 +38,13 @@ func NewProjectAsset(fileName string, project *Project, file *os.File) (*Project
 	if err != nil {
 		return nil, err
 	}
-	if slices.Contains(ModelExtensions, asset.Extension) {
+	if slices.Contains(ModelExtensions, strings.ToLower(asset.Extension)) {
 		asset.AssetType = ProjectModelType
 		asset.Model, err = NewProjectModel(fileName, asset, project, file)
-	} else if slices.Contains(ImageExtensions, asset.Extension) {
+	} else if slices.Contains(ImageExtensions, strings.ToLower(asset.Extension)) {
 		asset.AssetType = ProjectImageType
 		asset.ProjectImage, err = NewProjectImage(fileName, asset, project, file)
-	} else if slices.Contains(SliceExtensions, asset.Extension) {
+	} else if slices.Contains(SliceExtensions, strings.ToLower(asset.Extension)) {
 		asset.AssetType = ProjectSliceType
 		asset.Slice, err = NewProjectSlice(fileName, asset, project, file)
 	} else {

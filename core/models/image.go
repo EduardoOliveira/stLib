@@ -24,3 +24,4 @@ func NewProjectImage(fileName string, asset *ProjectAsset, project *Project, fil
 func (p ProjectImage) MarshalJSON() ([]byte, error) {
 	return json.Marshal(marshalProjectImage{})
 }
+

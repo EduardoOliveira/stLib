@@ -46,7 +46,7 @@ func walker(path string, d fs.DirEntry, err error) error {
 		return err
 	}
 
-	if len(project.Models) > 0 {
+	if len(project.Assets) > 0 {
 		state.Projects[project.UUID] = project
 	}
 	return nil
@@ -82,21 +82,31 @@ func DiscoverProjectAssets(project *models.Project) error {
 		return err
 	}
 
+	if project.DefaultImagePath == "" {
+		for _, asset := range project.Assets {
+			if asset.AssetType == models.ProjectImageType {
+				project.DefaultImagePath = asset.SHA1
+				break
+			}
+		}
+	}
+
 	return nil
 }
 
 func pathToTags(path string) []string {
+	log.Println("pathToTags", path)
 	tags := strings.Split(path, "/")
 	if len(tags) > 1 {
 		tags = tags[1:]
 	} else {
 		tags = make([]string, 0)
 	}
+	log.Println("pathToTags", tags)
 	return tags
 }
 
 func initProject(project *models.Project) error {
-	project.Initialized = true
 	_, err := toml.DecodeFile(utils.ToLibPath(fmt.Sprintf("%s/.project.stlib", project.Path)), &project)
 	if err != nil {
 		log.Printf("error decoding the project %q: %v\n", project.Path, err)
@@ -132,21 +142,14 @@ func initProjectAssets(project *models.Project, files []fs.FileInfo) error {
 			return err
 		}
 
-		switch asset.AssetType {
-		case models.ProjectModelType:
-			project.Models[asset.SHA1] = asset
-		case models.ProjectImageType:
-			project.Images[asset.SHA1] = asset
-		case models.ProjectFileType:
-			project.Files[asset.SHA1] = asset
-		case models.ProjectSliceType:
-			project.Slices[asset.SHA1] = asset
+		if asset.AssetType == models.ProjectSliceType {
 			if asset.Slice.Image != nil {
-				project.Images[asset.Slice.Image.SHA1] = asset.Slice.Image
 				project.Assets[asset.Slice.Image.SHA1] = asset.Slice.Image
 			}
 		}
+
 		project.Assets[asset.SHA1] = asset
+		state.Assets[asset.SHA1] = asset
 
 	}
 

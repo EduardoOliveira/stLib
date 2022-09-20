@@ -8,16 +8,13 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"path/filepath"
 	"regexp"
-	"strings"
 	"time"
 
 	"github.com/eduardooliveira/stLib/core/models"
 	"github.com/eduardooliveira/stLib/core/runtime"
 	"github.com/eduardooliveira/stLib/core/state"
 	"github.com/eduardooliveira/stLib/core/utils"
-	"golang.org/x/exp/slices"
 )
 
 func fetchThing(url string) error {
@@ -147,12 +144,7 @@ func fetchFiles(id string, project *models.Project, httpClient *http.Client) err
 			return err
 		}
 
-		ext := filepath.Ext(strings.ToLower(file.Name))
-		if slices.Contains(models.ModelExtensions, ext) {
-			project.Models[asset.SHA1] = asset
-		} else {
-			project.Files[asset.SHA1] = asset
-		}
+		project.Assets[asset.SHA1] = asset
 
 	}
 
@@ -214,7 +206,8 @@ func fetchImages(id string, project *models.Project, httpClient *http.Client) er
 				if err != nil {
 					return err
 				}
-				project.Images[asset.SHA1] = asset
+
+				project.Assets[asset.SHA1] = asset
 				project.DefaultImagePath = asset.SHA1
 			}
 		}

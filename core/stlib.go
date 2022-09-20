@@ -6,12 +6,9 @@ import (
 	"log"
 	"os"
 
+	"github.com/eduardooliveira/stLib/core/assets"
 	"github.com/eduardooliveira/stLib/core/discovery"
 	"github.com/eduardooliveira/stLib/core/downloader"
-	"github.com/eduardooliveira/stLib/core/projectFiles"
-	"github.com/eduardooliveira/stLib/core/projectImages"
-	"github.com/eduardooliveira/stLib/core/projectModels"
-	"github.com/eduardooliveira/stLib/core/projectSlices"
 	"github.com/eduardooliveira/stLib/core/projects"
 	"github.com/eduardooliveira/stLib/core/runtime"
 	"github.com/labstack/echo/v4"
@@ -46,11 +43,8 @@ func Run() {
 
 	api := e.Group("/api")
 
-	projectSlices.Register(api.Group("/slices"))
-	projectImages.Register(api.Group("/images"))
-	projectFiles.Register(api.Group("/files"))
-	projectModels.Register(api.Group("/models"))
 	projects.Register(api.Group("/projects"))
+	assets.Register(api.Group("/assets"))
 	downloader.Register(api.Group("/downloader"))
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", runtime.Cfg.Port)))

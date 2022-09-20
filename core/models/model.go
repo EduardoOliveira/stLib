@@ -17,18 +17,21 @@ var ModelExtensions = []string{".stl"}
 
 type ProjectModel struct {
 	*ProjectAsset
+	ImageSha1 string `json:"image_sha1"`
 }
 
 type cacheJob struct {
 	renderName string
-	modelName  string
+	model      *ProjectModel
 	project    *Project
 	err        chan error
 }
 
 var cacheJobs chan *cacheJob
 
-type marshalProjectModel struct{}
+type marshalProjectModel struct {
+	ImageSha1 string `json:"image_sha1"`
+}
 
 func init() {
 	log.Println("Starting", runtime.Cfg.MaxRenderWorkers, "render workers")
@@ -41,36 +44,20 @@ func NewProjectModel(fileName string, asset *ProjectAsset, project *Project, fil
 		ProjectAsset: asset,
 	}
 
-	go loadImage(fileName, project)
+	loadImage(m, project)
 
 	return m, nil
 }
 
-func (p ProjectModel) MarshalJSON() ([]byte, error) {
-	return json.Marshal(marshalProjectModel{})
-}
-
-func renderWorker(jobs <-chan *cacheJob) {
-	for job := range jobs {
-		go func(job *cacheJob) {
-			log.Println("rendering", job.renderName)
-			err := render.RenderModel(job.renderName, job.modelName, job.project.Path)
-			log.Println(err)
-			job.err <- err
-			log.Println("rendered", job.renderName)
-		}(job)
-	}
-}
-
-func loadImage(modelName string, project *Project) {
-	renderName := fmt.Sprintf("%s.render.png", modelName)
+func loadImage(model *ProjectModel, project *Project) {
+	renderName := fmt.Sprintf("%s.render.png", model.Name)
 	renderPath := utils.ToLibPath(fmt.Sprintf("%s/%s", project.Path, renderName))
 
 	if _, err := os.Stat(renderPath); err != nil {
 		errChan := make(chan error, 1)
 		cacheJobs <- &cacheJob{
 			renderName: renderName,
-			modelName:  modelName,
+			model:      model,
 			project:    project,
 			err:        errChan,
 		}
@@ -82,14 +69,35 @@ func loadImage(modelName string, project *Project) {
 	}
 	f, err := os.Open(renderPath)
 	if err != nil {
-		log.Panicln(err)
+		log.Println(err)
+		return
 	}
 
 	asset, err := NewProjectAsset(renderName, project, f)
 	if err != nil {
 		log.Println(err)
+		return
 	}
-	project.Images[asset.SHA1] = asset
-	project.Assets[asset.SHA1] = asset
 
+	project.Assets[asset.SHA1] = asset
+	model.ImageSha1 = asset.SHA1
+
+}
+
+func renderWorker(jobs <-chan *cacheJob) {
+	for job := range jobs {
+		go func(job *cacheJob) {
+			log.Println("rendering", job.renderName)
+			err := render.RenderModel(job.renderName, job.model.Name, job.project.Path)
+			log.Println(err)
+			job.err <- err
+			log.Println("rendered", job.renderName)
+		}(job)
+	}
+}
+
+func (p ProjectModel) MarshalJSON() ([]byte, error) {
+	return json.Marshal(marshalProjectModel{
+		ImageSha1: p.ImageSha1,
+	})
 }
