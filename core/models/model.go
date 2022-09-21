@@ -3,17 +3,20 @@ package models
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/eduardooliveira/stLib/core/render"
 	"github.com/eduardooliveira/stLib/core/runtime"
 	"github.com/eduardooliveira/stLib/core/utils"
+	"github.com/hpinc/go3mf"
 )
 
 const ProjectModelType = "model"
 
-var ModelExtensions = []string{".stl"}
+var ModelExtensions = []string{".stl", ".3mf"}
 
 type ProjectModel struct {
 	*ProjectAsset
@@ -44,9 +47,55 @@ func NewProjectModel(fileName string, asset *ProjectAsset, project *Project, fil
 		ProjectAsset: asset,
 	}
 
-	loadImage(m, project)
+	if strings.ToLower(m.Extension) == ".stl" {
+		loadImage(m, project)
+	} else if strings.ToLower(m.Extension) == ".3mf" {
+		loadImage3MF(m, project)
+		m.MimeType = "model/3mf"
+	}
 
 	return m, nil
+}
+
+func loadImage3MF(model *ProjectModel, project *Project) {
+	var m3 go3mf.Model
+	r, _ := go3mf.OpenReader(utils.ToLibPath(fmt.Sprintf("%s/%s", project.Path, model.Name)))
+	r.Decode(&m3)
+	for _, attachment := range m3.Attachments {
+		fmt.Println("attachment:", attachment)
+		renderName := ""
+		if attachment.ContentType == "image/png" {
+			renderName = fmt.Sprintf("%s.render.png", model.Name)
+		} else if attachment.ContentType == "image/jpg" {
+			renderName = fmt.Sprintf("%s.render.jpg", model.Name)
+		} else {
+			continue
+		}
+
+		renderPath := utils.ToLibPath(fmt.Sprintf("%s/%s", project.Path, renderName))
+
+		b, _ := io.ReadAll(attachment.Stream)
+		err := os.WriteFile(renderPath, b, 0644)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		f, err := os.Open(renderPath)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		asset, err := NewProjectAsset(renderName, project, f)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		project.Assets[asset.SHA1] = asset
+		model.ImageSha1 = asset.SHA1
+		break
+	}
 }
 
 func loadImage(model *ProjectModel, project *Project) {

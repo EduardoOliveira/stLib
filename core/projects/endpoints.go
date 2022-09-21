@@ -55,6 +55,8 @@ func getAsset(c echo.Context) error {
 		return c.NoContent(http.StatusNotFound)
 	}
 
+	c.Response().Header().Set("content-type", asset.MimeType)
+
 	if c.QueryParam("download") != "" {
 		return c.Attachment(utils.ToLibPath(fmt.Sprintf("%s/%s", project.Path, asset.Name)), asset.Name)
 
