@@ -1,0 +1,7 @@
+[users]
+  [users.asdasdasd]
+    username = "foo"
+    password = "$2a$14$IvI5O8APvstp4BsUedgD3O8hWVnJyj4geM0/iGpSK/poblG1ojo4K"
+  [users.asdasdasssd]
+    username = "foo2"
+    password = "$2a$14$tkjnQjuJfynN38lWMImf3ePHkJqHzrOv4WAyf4d8NcY25taXEcBe2"

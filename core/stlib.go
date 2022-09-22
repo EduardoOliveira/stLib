@@ -11,6 +11,7 @@ import (
 	"github.com/eduardooliveira/stLib/core/downloader"
 	"github.com/eduardooliveira/stLib/core/projects"
 	"github.com/eduardooliveira/stLib/core/runtime"
+	"github.com/eduardooliveira/stLib/core/system/users"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -42,6 +43,8 @@ func Run() {
 	}))
 
 	api := e.Group("/api")
+
+	users.Register(*api.Group("/users"))
 
 	projects.Register(api.Group("/projects"))
 	assets.Register(api.Group("/assets"))
