@@ -31,9 +31,6 @@ func Run() {
 	discovery.Run(runtime.Cfg.LibraryPath)
 	fmt.Println("starting server...")
 	e := echo.New()
-	e.Use(middleware.CORS())
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
 
 	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
 		Root:   "frontend/dist",
@@ -42,13 +39,24 @@ func Run() {
 		HTML5:  true,
 	}))
 
+	e.Use(middleware.CORS())
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+
 	api := e.Group("/api")
+	protected := api.Group("")
+	if runtime.Cfg.EnableAuth {
+		protected.Use(middleware.JWTWithConfig(middleware.JWTConfig{
+			TokenLookup: "header:Authorization",
+			SigningKey:  []byte(runtime.Cfg.JwtSecret),
+		}))
+	}
 
-	users.Register(*api.Group("/users"))
+	users.Register(protected.Group("/users"), api.Group("/users"))
 
-	projects.Register(api.Group("/projects"))
-	assets.Register(api.Group("/assets"))
-	downloader.Register(api.Group("/downloader"))
+	projects.Register(protected.Group("/projects"))
+	assets.Register(protected.Group("/assets"))
+	downloader.Register(protected.Group("/downloader"))
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", runtime.Cfg.Port)))
 }

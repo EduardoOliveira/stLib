@@ -16,6 +16,8 @@ type Config struct {
 	ThingiverseToken     string   `toml:"thingiverse_token"`
 	LogPath              string   `toml:"log_path"`
 	SystemPath           string   `toml:"system_path"`
+	JwtSecret            string   `toml:"jwt_secret"`
+	EnableAuth           bool     `toml:"enable_auth"`
 }
 
 var Cfg *Config
@@ -29,6 +31,7 @@ func init() {
 	viper.SetDefault("model_render_color", "#ffffff")
 	viper.SetDefault("model_background_color", "#000000")
 	viper.SetDefault("thingiverse_token", "")
+	viper.SetDefault("enable_auth", true)
 	viper.SetDefault("log_path", "./log")
 	viper.SetDefault("system_path", "/config/system")
 
@@ -43,6 +46,10 @@ func init() {
 		log.Println("error config file: %w", err)
 	}
 
+	if viper.GetBool("enable_auth") && viper.GetString("jwt_secret") == "" {
+		log.Fatal("jwt_secret is not set")
+	}
+
 	Cfg = &Config{
 		LibraryPath:          viper.GetString("library_path"),
 		Port:                 viper.GetInt("port"),
@@ -53,5 +60,7 @@ func init() {
 		ThingiverseToken:     viper.GetString("thingiverse_token"),
 		LogPath:              viper.GetString("log_path"),
 		SystemPath:           viper.GetString("system_path"),
+		JwtSecret:            viper.GetString("jwt_secret"),
+		EnableAuth:           viper.GetBool("enable_auth"),
 	}
 }

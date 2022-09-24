@@ -8,26 +8,42 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/eduardooliveira/stLib/core/runtime"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
-	Username string `toml:"username"`
-	Password string `toml:"password"`
-	Role     string `toml:"role"`
+	Uuid        string   `toml:"uuid"`
+	Username    string   `toml:"username"`
+	Password    string   `toml:"password"`
+	Permissions []string `toml:"permissions"`
 }
 
-var data struct {
-	Users map[string]*User `toml:"users"`
+var Permissions = []string{
+	"admin",
+	"project:create",
+	"project:read",
+	"assets:image:read",
+	"assets:image:write",
+	"assets:model:read",
+	"assets:model:read-licensed",
+	"assets:model:write",
+	"assets:file:read",
+	"assets:file:write",
+	"assets:slice:read",
+	"assets:slice:write",
 }
+
+var users map[string]*User
 var userFile string
 
-func Register(g echo.Group) {
+func Register(protected *echo.Group, public *echo.Group) {
 	userFile = fmt.Sprintf("%s/users/users.toml", runtime.Cfg.SystemPath)
 	initFs()
 	initUsers()
-	g.GET("/users", nil)
+	protected.GET("/users", nil)
+	public.POST("/login", login)
 
 }
 
@@ -47,7 +63,14 @@ func initFs() {
 		defer file.Close()
 	}
 
-	_, err = toml.DecodeFile(userFile, &data)
+}
+
+func initUsers() {
+
+	var data struct {
+		Users map[string]*User `toml:"users"`
+	}
+	_, err := toml.DecodeFile(userFile, &data)
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -56,12 +79,8 @@ func initFs() {
 
 	_ = toml.NewEncoder(os.Stdout).Encode(data)
 
-}
-
-func initUsers() {
-
 	changed := false
-
+	users = make(map[string]*User)
 	for _, user := range data.Users {
 		if c, err := bcrypt.Cost([]byte(user.Password)); err != nil || c == 0 {
 			bytes, err := bcrypt.GenerateFromPassword([]byte(user.Password), 14)
@@ -71,6 +90,11 @@ func initUsers() {
 			user.Password = string(bytes)
 			changed = true
 		}
+		if user.Uuid == "" {
+			user.Uuid = uuid.New().String()
+			changed = true
+		}
+		users[user.Username] = user
 	}
 
 	if changed {

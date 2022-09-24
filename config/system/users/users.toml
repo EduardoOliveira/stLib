@@ -1,7 +1,14 @@
 [users]
-  [users.asdasdasd]
+  [users.asda]
+    uuid = "005576c7-a24b-4992-ab19-891b645941f2"
     username = "foo"
+    password = "$2a$14$6aVohqhVzT.hCQ9f9wo3xOufTd8XpBsoG9m3L75nXra4LD3Lk0hUK"
+    permissions = ["admin", "read", "write"]
+  [users.asdasdasd]
+    uuid = "c9437486-1d57-475b-adac-f20d521e4225"
+    username = "foooo"
     password = "$2a$14$IvI5O8APvstp4BsUedgD3O8hWVnJyj4geM0/iGpSK/poblG1ojo4K"
   [users.asdasdasssd]
+    uuid = "d8a2a2df-c844-4997-a374-b4b7366e6686"
     username = "foo2"
     password = "$2a$14$tkjnQjuJfynN38lWMImf3ePHkJqHzrOv4WAyf4d8NcY25taXEcBe2"
