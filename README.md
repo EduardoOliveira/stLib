@@ -66,7 +66,7 @@ services:
     environment:
       - "THINGIVERSE_TOKEN=" # needed for the thingiverse download feature
       #- "PORT=8000"
-      #- "LIBRARY_PATH=./library"
+      #- "LIBRARY_PATH=/library"
       #- "MAX_RENDER_WORKERS=5"
       #- "MODEL_RENDER_COLOR=#167DF0"
       #- "MODEL_BACKGROUND_COLOR=#FFFFFF"
