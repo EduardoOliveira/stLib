@@ -64,13 +64,13 @@ services:
     ports:
       - 8000:8000
     environment:
-      - "THINGIVERSE_TOKEN": "" # needed for the thingiverse download feature
-      #- "PORT": 8000
-      #- "LIBRARY_PATH": "./library"
-      #- "MAX_RENDER_WORKERS": 5
-      #- "MODEL_RENDER_COLOR": "#ffffff"
-      #- "MODEL_BACKGROUND_COLOR": "#000000"
-      #- "LOG_PATH": "./log" # If you wish to log to a file
+      - "THINGIVERSE_TOKEN=" # needed for the thingiverse download feature
+      #- "PORT=8000"
+      #- "LIBRARY_PATH=./library"
+      #- "MAX_RENDER_WORKERS=5"
+      #- "MODEL_RENDER_COLOR=#167DF0"
+      #- "MODEL_BACKGROUND_COLOR=#FFFFFF"
+      #- "LOG_PATH=./log" # If you wish to log to a file
     
     restart: unless-stopped
 ```
