@@ -1,13 +1,17 @@
 package users
 
 import (
+	"errors"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"path"
+	"strings"
 
 	"github.com/BurntSushi/toml"
 	"github.com/eduardooliveira/stLib/core/runtime"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
@@ -29,6 +33,7 @@ var Permissions = []string{
 	"assets:model:read",
 	"assets:model:read-licensed",
 	"assets:model:write",
+	"assets:model:write-licensed",
 	"assets:file:read",
 	"assets:file:write",
 	"assets:slice:read",
@@ -108,5 +113,61 @@ func initUsers() {
 		if err != nil {
 			log.Println(err)
 		}
+	}
+}
+
+func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+
+		/*
+			protected.Use(middleware.JWTWithConfig(middleware.JWTConfig{
+				TokenLookup: "header:Authorization",
+				SigningKey:  []byte(runtime.Cfg.JwtSecret),
+			}))
+		*/
+		authorization := c.Request().Header["Authorization"]
+
+		if authorization[0] != "" {
+			tokenString := strings.TrimPrefix(authorization[0], "Bearer ")
+			token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+				return []byte(runtime.Cfg.JwtSecret), nil
+			})
+
+			if errors.Is(err, jwt.ErrTokenMalformed) {
+				log.Println("Malformed token")
+				return c.NoContent(http.StatusUnauthorized)
+			} else if errors.Is(err, jwt.ErrTokenExpired) || errors.Is(err, jwt.ErrTokenNotValidYet) {\
+				log.Println("Token Expired")
+				return c.NoContent(http.StatusUnauthorized)
+			} else {
+				fmt.Println("Couldn't handle this token:", err)
+				return c.NoContent(http.StatusUnauthorized)
+			}
+			
+			claims:=token.Claims.(jwt.MapClaims)
+
+			if sub:= claims["sub"].(string);sub!=""{
+				if u, ok := user[sub];ok{
+					c.Put("user",users[sub])
+					c.Put("Permissions",users[sub].Permissions)
+				}else{
+					fmt.Println("user not found")
+					return c.NoContent(http.StatusUnauthorized)
+				}
+			}else{
+				fmt.Println("invalid user")
+				return c.NoContent(http.StatusUnauthorized)
+			}
+		}else{
+			c.Put("Permissions",defaultPermissions)
+		}
+
+
+
+
+		if err := next(c); err != nil {
+			c.Error(err)
+		}
+		return nil
 	}
 }

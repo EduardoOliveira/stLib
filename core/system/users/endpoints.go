@@ -39,10 +39,17 @@ func login(c echo.Context) error {
 		log.Println("Password does not match", err)
 		return c.NoContent(http.StatusUnauthorized)
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"sub":         user.Uuid,
-		"permissions": user.Permissions,
-	})
+
+	claims := jwt.MapClaims{
+		"sub":      user.Uuid,
+		"username": user.Username,
+	}
+
+	for _, permission := range user.Permissions {
+		claims[permission] = true
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	// Sign and get the complete encoded token as a string using the secret
 	tokenString, err := token.SignedString([]byte(runtime.Cfg.JwtSecret))

@@ -13,12 +13,20 @@ import (
 	"github.com/eduardooliveira/stLib/core/runtime"
 	"github.com/eduardooliveira/stLib/core/state"
 	"github.com/eduardooliveira/stLib/core/utils"
+	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
 func index(c echo.Context) error {
-	return c.JSON(http.StatusOK, state.Projects)
+
+	claims := c.Get("user").(*jwt.Token).Claims.(jwt.MapClaims)
+
+	if _, ok := claims["admin"]; ok {
+		return c.JSON(http.StatusOK, state.Projects)
+	}
+
+	return c.NoContent(http.StatusForbidden)
 }
 
 func show(c echo.Context) error {

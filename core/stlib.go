@@ -46,10 +46,7 @@ func Run() {
 	api := e.Group("/api")
 	protected := api.Group("")
 	if runtime.Cfg.EnableAuth {
-		protected.Use(middleware.JWTWithConfig(middleware.JWTConfig{
-			TokenLookup: "header:Authorization",
-			SigningKey:  []byte(runtime.Cfg.JwtSecret),
-		}))
+		protected.Use(users.AuthMiddleware)
 	}
 
 	users.Register(protected.Group("/users"), api.Group("/users"))
