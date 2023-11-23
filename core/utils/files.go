@@ -34,10 +34,11 @@ func ToLibPath(path string) string {
 }
 
 func Move(src, dst string) error {
+	dst = ToLibPath(dst)
 	log.Print(path.Dir(dst))
 	if err := os.MkdirAll(path.Dir(dst), os.ModePerm); err != nil {
 		return err
 	}
 
-	return os.Rename(src, ToLibPath(dst))
+	return os.Rename(src, dst)
 }

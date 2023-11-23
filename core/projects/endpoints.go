@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/eduardooliveira/stLib/core/discovery"
 	"github.com/eduardooliveira/stLib/core/models"
@@ -18,7 +19,11 @@ import (
 )
 
 func index(c echo.Context) error {
-	return c.JSON(http.StatusOK, state.Projects)
+	rtn := make([]*models.Project, 0)
+	for _, p := range state.Projects {
+		rtn = append(rtn, p)
+	}
+	return c.JSON(http.StatusOK, rtn)
 }
 
 func show(c echo.Context) error {
@@ -38,7 +43,11 @@ func showAssets(c echo.Context) error {
 	if !ok {
 		return c.NoContent(http.StatusNotFound)
 	}
-	return c.JSON(http.StatusOK, project.Assets)
+	rtn := make([]*models.ProjectAsset, 0)
+	for _, a := range project.Assets {
+		rtn = append(rtn, a)
+	}
+	return c.JSON(http.StatusOK, rtn)
 }
 
 func getAsset(c echo.Context) error {
@@ -63,32 +72,6 @@ func getAsset(c echo.Context) error {
 	return c.Inline(utils.ToLibPath(fmt.Sprintf("%s/%s", project.Path, asset.Name)), asset.Name)
 }
 
-func initProject(c echo.Context) error {
-
-	if c.Param("uuid") == "" {
-		return c.NoContent(http.StatusBadRequest)
-	}
-
-	uuid := c.Param("uuid")
-
-	project, ok := state.Projects[uuid]
-
-	if !ok {
-		return c.NoContent(http.StatusNotFound)
-	}
-
-	project.Initialized = true
-
-	err := state.PersistProject(project)
-
-	if err != nil {
-		log.Println(err)
-		return c.NoContent(http.StatusInternalServerError)
-	}
-
-	return c.NoContent(http.StatusOK)
-}
-
 func save(c echo.Context) error {
 	pproject := &models.Project{}
 
@@ -107,21 +90,22 @@ func save(c echo.Context) error {
 		return c.NoContent(http.StatusNotFound)
 	}
 
-	if !project.Initialized {
-		return c.NoContent(http.StatusOK)
+	pproject.Assets = project.Assets
+
+	if pproject.Name != project.Name || !strings.HasSuffix(pproject.Path, fmt.Sprintf("/%s", pproject.Name)) {
+		project.Name = pproject.Name
 	}
 
-	pproject.Assets = project.Assets
-	pproject.Initialized = true
+	err := move(project, pproject)
 
-	if pproject.Path != project.Path {
-		utils.Move(utils.ToLibPath(project.Path), pproject.Path)
-		project.Path = pproject.Path
+	if err != nil {
+		log.Println(err)
+		return c.NoContent(http.StatusInternalServerError)
 	}
 
 	state.Projects[pproject.UUID] = pproject
 
-	err := state.PersistProject(pproject)
+	err = state.PersistProject(pproject)
 
 	if err != nil {
 		log.Println(err)
@@ -197,4 +181,79 @@ func new(c echo.Context) error {
 	return c.JSON(http.StatusOK, struct {
 		UUID string `json:"uuid"`
 	}{project.UUID})
+}
+
+func moveHandler(c echo.Context) error {
+	pproject := &models.Project{}
+
+	if err := c.Bind(pproject); err != nil {
+		log.Println(err)
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	if pproject.UUID != c.Param("uuid") {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	project, ok := state.Projects[pproject.UUID]
+
+	if !ok {
+		return c.NoContent(http.StatusNotFound)
+	}
+
+	err := move(project, pproject)
+
+	if err != nil {
+		log.Println(err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	project.Path = pproject.Path
+
+	err = state.PersistProject(project)
+
+	if err != nil {
+		log.Println(err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	
+	return c.JSON(http.StatusOK, struct {
+		UUID string `json:"uuid"`
+		Path string `json:"path"`
+	}{project.UUID, project.Path})
+}
+
+func setMainImageHandler(c echo.Context) error {
+	pproject := &models.Project{}
+
+	if err := c.Bind(pproject); err != nil {
+		log.Println(err)
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	if pproject.UUID != c.Param("uuid") {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	project, ok := state.Projects[pproject.UUID]
+
+	if !ok {
+		return c.NoContent(http.StatusNotFound)
+	}
+
+	if pproject.DefaultImagePath != project.DefaultImagePath {
+		project.DefaultImagePath = pproject.DefaultImagePath
+	} 
+
+	err := state.PersistProject(project)
+
+	if err != nil {
+		log.Println(err)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	return c.JSON(http.StatusOK, struct {
+		UUID string `json:"uuid"`
+		Path string `json:"path"`
+	}{project.UUID, project.DefaultImagePath})
 }

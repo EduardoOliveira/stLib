@@ -39,10 +39,12 @@ func fetchThing(url string) error {
 		}
 		err = fetchFiles(id, project, httpClient)
 		if err != nil {
+			log.Println("error fetching files")
 			return err
 		}
 		err = fetchImages(id, project, httpClient)
 		if err != nil {
+			log.Println("error fetching images")
 			return err
 		}
 
@@ -52,9 +54,9 @@ func fetchThing(url string) error {
 		}
 		project.Path = project.Name
 
-		j, _ := json.Marshal(project)
-		fmt.Println(string(j))
+		project.Initialized = true
 
+		state.PersistProject(project)
 		state.Projects[project.UUID] = project
 
 	}
@@ -62,9 +64,12 @@ func fetchThing(url string) error {
 }
 
 func fetchDetails(id string, project *models.Project, httpClient *http.Client) error {
+	u := &url.URL{Scheme: "https", Host: "api.thingiverse.com", Path: "/things/" + id}
+	project.ExternalLink = u.String()
+
 	req := &http.Request{
 		Method: "GET",
-		URL:    &url.URL{Scheme: "https", Host: "api.thingiverse.com", Path: "/things/" + id},
+		URL:    u,
 		Header: http.Header{
 			"Authorization": []string{"Bearer " + runtime.Cfg.ThingiverseToken},
 		},
@@ -121,7 +126,8 @@ func fetchFiles(id string, project *models.Project, httpClient *http.Client) err
 		}
 		defer out.Close()
 
-		req.URL, _ = url.Parse(file.DirectURL)
+		log.Println(file.DownloadURL)
+		req.URL, _ = url.Parse(file.DownloadURL)
 		resp, err := httpClient.Do(req)
 		if err != nil {
 			return err

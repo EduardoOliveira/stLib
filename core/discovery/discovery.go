@@ -47,7 +47,12 @@ func walker(path string, d fs.DirEntry, err error) error {
 	}
 
 	if len(project.Assets) > 0 {
+		project.Initialized = true
 		state.Projects[project.UUID] = project
+		err := state.PersistProject(project)
+		if err != nil {
+			log.Println(err)
+		}
 	}
 	return nil
 }
@@ -71,9 +76,10 @@ func DiscoverProjectAssets(project *models.Project) error {
 			log.Printf("error loading the project %q: %v\n", project.Path, err)
 			return err
 		}
-		if !project.Initialized {
-			project.Tags = pathToTags(project.Path)
-		}
+	}
+	
+	if !project.Initialized {
+		project.Tags = pathToTags(project.Path)
 	}
 
 	err = initProjectAssets(project, files)

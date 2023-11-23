@@ -11,6 +11,7 @@ import (
 	"github.com/eduardooliveira/stLib/core/downloader"
 	"github.com/eduardooliveira/stLib/core/projects"
 	"github.com/eduardooliveira/stLib/core/runtime"
+	"github.com/eduardooliveira/stLib/core/system"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -46,6 +47,7 @@ func Run() {
 	projects.Register(api.Group("/projects"))
 	assets.Register(api.Group("/assets"))
 	downloader.Register(api.Group("/downloader"))
+	system.Register(api.Group("/system"))
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%d", runtime.Cfg.Port)))
 }
