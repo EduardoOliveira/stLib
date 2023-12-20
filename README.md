@@ -2,6 +2,8 @@
 A platform that allows the viewing and management of 3d printing related projects and assets
 
 
+# This project has been migrated, you can now find it at https://github.com/Maker-Management-Platform/docs
+
 ## Problem
 Many of us hoard a tone of STL's from public sites, patreon and so forth. Keeping a tidy library easy to access and search proved difficult (at least for me).
 
